@@ -1,0 +1,10 @@
+<phpunit>
+    <testsuite name="Ouchbase Tests">
+        <directory>.</directory>
+    </testsuite>
+
+    <logging>
+        <!--<log type="coverage-clover" target="logs/phpunit-coverage-clover.xml" showUncoveredFiles="false"/>-->
+        <log type="junit" target="logs/phpunit.xml" logIncompleteSkipped="true" />
+    </logging>
+</phpunit>

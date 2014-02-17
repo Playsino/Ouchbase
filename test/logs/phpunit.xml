@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/ihor/Development/projects/ouchbase/test" tests="12" assertions="18" failures="0" errors="0" time="0.016223">
+    <testsuite name="OuchbaseTest\EntityProxyTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityProxyTest.php" namespace="OuchbaseTest" fullPackage="OuchbaseTest" tests="4" assertions="5" failures="0" errors="0" time="0.007259">
+      <testcase name="testGetId" class="OuchbaseTest\EntityProxyTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityProxyTest.php" line="21" assertions="1" time="0.004780"/>
+      <testcase name="testGet" class="OuchbaseTest\EntityProxyTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityProxyTest.php" line="26" assertions="1" time="0.000858"/>
+      <testcase name="testSet" class="OuchbaseTest\EntityProxyTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityProxyTest.php" line="31" assertions="2" time="0.000751"/>
+      <testcase name="testCall" class="OuchbaseTest\EntityProxyTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityProxyTest.php" line="38" assertions="1" time="0.000870"/>
+    </testsuite>
+    <testsuite name="OuchbaseTest\EntityTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityTest.php" namespace="OuchbaseTest" fullPackage="OuchbaseTest" tests="1" assertions="1" failures="0" errors="0" time="0.000998">
+      <testcase name="testGetId" class="OuchbaseTest\EntityTest" file="/Users/ihor/Development/projects/ouchbase/test/EntityTest.php" line="9" assertions="1" time="0.000998"/>
+    </testsuite>
+    <testsuite name="OuchbaseTest\EtcTest" file="/Users/ihor/Development/projects/ouchbase/test/EtcTest.php" namespace="OuchbaseTest" fullPackage="OuchbaseTest" tests="2" assertions="5" failures="0" errors="0" time="0.002816">
+      <testcase name="testGetEntityClass" class="OuchbaseTest\EtcTest" file="/Users/ihor/Development/projects/ouchbase/test/EtcTest.php" line="11" assertions="2" time="0.001355"/>
+      <testcase name="testGetEntityHash" class="OuchbaseTest\EtcTest" file="/Users/ihor/Development/projects/ouchbase/test/EtcTest.php" line="20" assertions="3" time="0.001461"/>
+    </testsuite>
+    <testsuite name="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" namespace="OuchbaseTest" fullPackage="OuchbaseTest" tests="5" assertions="7" failures="0" errors="0" time="0.005149">
+      <testcase name="testRegisterAndContains" class="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" line="19" assertions="2" time="0.001241"/>
+      <testcase name="testGetEntity" class="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" line="30" assertions="1" time="0.000626"/>
+      <testcase name="testGetOriginalData" class="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" line="38" assertions="1" time="0.001171"/>
+      <testcase name="testUpdateOriginalData" class="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" line="46" assertions="1" time="0.001394"/>
+      <testcase name="testClear" class="OuchbaseTest\IdentityMapTest" file="/Users/ihor/Development/projects/ouchbase/test/IdentityMapTest.php" line="55" assertions="2" time="0.000717"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
