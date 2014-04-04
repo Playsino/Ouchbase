@@ -6,13 +6,13 @@ abstract class Repository
      * Override this property in subclasses
      * @var string
      */
-    protected keyPrefix = "";
+    protected static keyPrefix = "";
 
     /**
      * Override this property in subclasses
      * @var string
      */
-    protected className;
+    protected static className;
 
     /**
      * @var \Ouchbase\UnitOfWork
@@ -39,7 +39,7 @@ abstract class Repository
      * @param \Ouchbase\IdentityMap identityMap
      * @param \Couchbase couchbase
      */
-    public function __construct(<Ouchbase\UnitOfWork> unitOfWork, <Ouchbase\IdentityMap> identityMap, <Couchbase> couchbase)
+    public function __construct(<\Ouchbase\UnitOfWork> unitOfWork, <\Ouchbase\IdentityMap> identityMap, <\Couchbase> couchbase)
     {
         let this->uow = unitOfWork;
         let this->im = identityMap;
@@ -52,10 +52,10 @@ abstract class Repository
      * @param bool concurrent
      * @return \Ouchbase\Entity|null
      */
-    public function find(id, boolean concurrent = false) -> <Ouchbase\Entity>|null
+    public function find(id, boolean concurrent = false) -> <\Ouchbase\Entity>|null
     {
         var entity;
-        let entity = this->im->getEntity(this->className, id);
+        let entity = this->im->getEntity(self::className, id);
         if entity {
             return entity;
         }
@@ -86,7 +86,7 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityLogicException
      * @return this
      */
-    public function refresh(<Ouchbase\Entity> entity, boolean concurrent = false) -> <Ouchbase\Repository>
+    public function refresh(<\Ouchbase\Entity> entity, boolean concurrent = false) -> <\Ouchbase\Repository>
     {
         if !this->im->contains(entity) {
             throw new \Ouchbase\Exception\EntityLogicException(entity, "was not persisted");
@@ -144,7 +144,7 @@ abstract class Repository
             cas = dataWithCas["cas"];
 
         for id, entityData in data {
-            let entity = this->im->getEntity(this->className, id);
+            let entity = this->im->getEntity(self::className, id);
             if entity {
                 // todo Refresh here?
                 let entities[] = entity;
@@ -170,7 +170,7 @@ abstract class Repository
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    public function insert(<Ouchbase\Entity> entity) -> <Ouchbase\Repository>
+    public function insert(<\Ouchbase\Entity> entity) -> <\Ouchbase\Repository>
     {
         var data;
         let data = this->toArray(entity);
@@ -190,7 +190,7 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return this
      */
-    public function update(<Ouchbase\Entity> entity, cas) -> <Ouchbase\Repository>
+    public function update(<\Ouchbase\Entity> entity, cas) -> <\Ouchbase\Repository>
     {
         // todo Diff calculation is responsibility of unit of work
         if entity instanceof Ouchbase\EntityProxy {
@@ -241,7 +241,7 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return this
      */
-    public function delete(<Ouchbase\Entity> entity, cas) -> <Ouchbase\Repository>
+    public function delete(<\Ouchbase\Entity> entity, cas) -> <\Ouchbase\Repository>
     {
         if !cas {
             this->executeWithoutTimeouts("delete", self::getKey(entity->getId()));
@@ -277,7 +277,7 @@ abstract class Repository
      * @throws \CouchbaseLibcouchbaseException
      * @return mixed
      */
-    private function executeWithoutTimeouts(command)
+    protected function executeWithoutTimeouts(command)
     {
         int attempts = 0;
         while attempts < 3 {
@@ -299,9 +299,9 @@ abstract class Repository
      * @param int|string id
      * @return string
      */
-    private function getKey(id) -> string
+    public function getKey(id) -> string
     {
-        return this->keyPrefix . id;
+        return self::keyPrefix . id;
     }
 
     /**
@@ -309,16 +309,16 @@ abstract class Repository
      */
     private function getClassReflection() -> <ReflectionClass>
     {
-        if !isset this->_reflections[this->className] {
+        if !isset this->_reflections[self::className] {
             var reflection;
-            let reflection = new \ReflectionClass(this->className);
-            let this->_reflections[this->className] = [
+            let reflection = new \ReflectionClass(self::className);
+            let this->_reflections[self::className] = [
                 "class": reflection,
                 "properties": []
             ];
         }
 
-        return this->_reflections[this->className]["class"];
+        return this->_reflections[self::className]["class"];
     }
 
     /**
@@ -327,14 +327,14 @@ abstract class Repository
      */
     private function getPropertyReflection(string property) -> <ReflectionProperty>
     {
-        if !isset this->_reflections[this->className]["properties"][property] {
+        if !isset this->_reflections[self::className]["properties"][property] {
             var reflection;
             let reflection = this->getClassReflection()->getProperty(property);
             reflection->setAccessible(true);
-            let this->_reflections[this->className]["properties"][property] = reflection;
+            let this->_reflections[self::className]["properties"][property] = reflection;
         }
 
-        return this->_reflections[this->className]["properties"][property];
+        return this->_reflections[self::className]["properties"][property];
     }
 
     /**
@@ -374,8 +374,8 @@ abstract class Repository
         return ["data": data, "cas": cas];
     }
 
-    abstract public function toArray(<Ouchbase\Entity> entity) {}
+    abstract public function toArray(<\Ouchbase\Entity> entity) {}
 
-    abstract public function toObject(data) -> <Ouchbase\Entity> {}
+    abstract public function toObject(data) -> <\Ouchbase\Entity> {}
 
 }

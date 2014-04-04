@@ -18,7 +18,7 @@ class EntityModifiedException extends \Ouchbase\Exception\EntityLogicException
      */
     private entity;
 
-    public function __construct(<Ouchbase\Entity> entity, string message = "", int code = 0, <Exception> previous = null)
+    public function __construct(<\Ouchbase\Entity> entity, string message = "", int code = 0, <Exception> previous = null)
     {
         let this->entity = entity;
         parent::__construct(entity, message, code, previous);
@@ -47,7 +47,7 @@ class EntityModifiedException extends \Ouchbase\Exception\EntityLogicException
     /**
      * @return \Ouchbase\Entity
      */
-    public function getEntity() -> <Ouchbase\Entity>
+    public function getEntity() -> <\Ouchbase\Entity>
     {
         return this->entity;
     }

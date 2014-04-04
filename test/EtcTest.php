@@ -4,7 +4,7 @@ namespace OuchbaseTest;
 
 use Ouchbase\_etc;
 
-require_once 'TestEntity.php';
+require_once '_etc.php';
 
 class EtcTest extends \PHPUnit_Framework_TestCase
 {

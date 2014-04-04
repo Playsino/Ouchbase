@@ -33,7 +33,7 @@ abstract class EntityManager
     /**
      * @param \Couchbase couchbase
      */
-    public function __construct(<Couchbase> couchbase)
+    public function __construct(<\Couchbase> couchbase)
     {
         let this->im = new IdentityMap();
         let this->uow = new UnitOfWork(this, this->im);
@@ -47,7 +47,7 @@ abstract class EntityManager
      * @param string entityRepositoryClassName
      * @return this
      */
-    public function registerManagedEntityClass(string entityClassName, string entityRepositoryClassName) -> <Ouchbase\EntityManager>
+    public function registerManagedEntityClass(string entityClassName, string entityRepositoryClassName) -> <\Ouchbase\EntityManager>
     {
         let this->entityRepositories[entityClassName] = entityRepositoryClassName;
         return this;
@@ -57,8 +57,9 @@ abstract class EntityManager
      * @param array map (entity class name => entity repository class name)
      * @return this
      */
-    public function registerManagedEntityClasses(map) -> <Ouchbase\EntityManager>
+    public function registerManagedEntityClasses(map) -> <\Ouchbase\EntityManager>
     {
+        var entityClassName, entityRepositoryClassName;
         for entityClassName, entityRepositoryClassName in map {
             let this->entityRepositories[entityClassName] = entityRepositoryClassName;
         }
@@ -70,8 +71,10 @@ abstract class EntityManager
      * @param string entityClassName
      * @return \Ouchbase\Repository
      */
-    public function getRepository(string entityClassName) -> <Ouchbase\Repository>
+    public function getRepository(string entityClassName) -> <\Ouchbase\Repository>
     {
+        echo "getRepository\n";
+        error_log("getRepository");
         if is_object(entityClassName) {
             let entityClassName = \Ouchbase\_etc::getEntityClass(entityClassName);
         }
@@ -83,11 +86,22 @@ abstract class EntityManager
      * @param string repositoryClassName
      * @return \Ouchbase\Repository
      */
-    protected function getCachedRepository(string repositoryClassName) -> <Ouchbase\Repository>
+    protected function getCachedRepository(string repositoryClassName) -> <\Ouchbase\Repository>
     {
+        echo "here - 0\n";
+        error_log("here - 0");
         if !(isset this->_repositories[repositoryClassName]) {
-            let this->_repositories[repositoryClassName] = new repositoryClassName(this->uow, this->im, this->cb);
+            echo "here - 1\n";
+            error_log("here - 1");
+            echo repositoryClassName;
+            echo "here - 2\n";
+            error_log(repositoryClassName);
+            error_log("here - 2");
+            let this->_repositories[repositoryClassName] = new {repositoryClassName}(this->uow, this->im, this->cb);
         }
+
+        echo "here - 3\n";
+        error_log("here - 3");
 
         return this->_repositories[repositoryClassName];
     }
@@ -96,7 +110,7 @@ abstract class EntityManager
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    public function persist(<Ouchbase\Entity> entity) -> <Ouchbase\EntityManager>
+    public function persist(<\Ouchbase\Entity> entity) -> <\Ouchbase\EntityManager>
     {
         if this->im->contains(entity) {
             this->uow->persist(entity);
@@ -113,7 +127,7 @@ abstract class EntityManager
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    public function delete(<Ouchbase\Entity> entity) -> <Ouchbase\EntityManager>
+    public function delete(<\Ouchbase\Entity> entity) -> <\Ouchbase\EntityManager>
     {
         this->uow->delete(entity);
         return this;
@@ -125,7 +139,7 @@ abstract class EntityManager
      * @throws \LogicException
      * @return this
      */
-    public function refresh(<Ouchbase\Entity> entity, bool concurrent = false) -> <Ouchbase\EntityManager>
+    public function refresh(<\Ouchbase\Entity> entity, bool concurrent = false) -> <\Ouchbase\EntityManager>
     {
         this->getRepository(\Ouchbase\_etc::getEntityClass(entity))->refresh(entity, concurrent);
         return this;
@@ -134,7 +148,7 @@ abstract class EntityManager
     /**
      * @return this
      */
-    public function flush() -> <Ouchbase\EntityManager>
+    public function flush() -> <\Ouchbase\EntityManager>
     {
         this->uow->commit();
         return this;
@@ -143,7 +157,7 @@ abstract class EntityManager
     /**
      * @return this
      */
-    public function clear() -> <Ouchbase\EntityManager>
+    public function clear() -> <\Ouchbase\EntityManager>
     {
         this->im->clear();
         this->uow->clear();
@@ -159,7 +173,7 @@ abstract class EntityManager
      * @throws \Ouchbase\Exception\EntityUpdateFailedException
      * @return this
      */
-    public function update(<Ouchbase\Entity> entity, callback, arg1, arg2)
+    public function update(<\Ouchbase\Entity> entity, callback)
     {
         if entity instanceof \Ouchbase\EntityProxy {
             let entity = entity->_getObject();

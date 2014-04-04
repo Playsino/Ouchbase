@@ -1,4 +1,4 @@
-<phpunit>
+<phpunit bootstrap="./bootstrap.php">
     <testsuite name="Ouchbase Tests">
         <directory>.</directory>
     </testsuite>

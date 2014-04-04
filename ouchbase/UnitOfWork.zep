@@ -31,7 +31,7 @@ class UnitOfWork
      * @param \Ouchbase\EntityManager entityManager
      * @param \Ouchbase\IdentityMap identityMap
      */
-    public function __construct(<Ouchbase\EntityManager> entityManager, <Ouchbase\IdentityMap> identityMap)
+    public function __construct(<\Ouchbase\EntityManager> entityManager, <\Ouchbase\IdentityMap> identityMap)
     {
         let this->em = entityManager;
         let this->im = identityMap;
@@ -43,7 +43,7 @@ class UnitOfWork
      * @throws \Ouchbase\Exception\EntityLogicException
      * @return this
      */
-    public function persist(<Ouchbase\Entity> entity, cas = null) -> <Ouchbase\UnitOfWork>
+    public function persist(<\Ouchbase\Entity> entity, cas = null) -> <\Ouchbase\UnitOfWork>
     {
         if isset this->deleted[\Ouchbase\_etc::getEntityHash(entity)] {
             throw new \Ouchbase\Exception\EntityLogicException(entity, "was marked as deleted");
@@ -59,7 +59,7 @@ class UnitOfWork
      * @throws \Ouchbase\Exception\EntityLogicException
      * @return this
      */
-    public function delete(<Ouchbase\Entity> entity) -> <Ouchbase\UnitOfWork>
+    public function delete(<\Ouchbase\Entity> entity) -> <\Ouchbase\UnitOfWork>
     {
         var hash;
         let hash = \Ouchbase\_etc::getEntityHash(entity);
@@ -77,7 +77,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    public function insert(<Ouchbase\Entity> entity) -> <Ouchbase\UnitOfWork>
+    public function insert(<\Ouchbase\Entity> entity) -> <\Ouchbase\UnitOfWork>
     {
         let this->inserted[\Ouchbase\_etc::getEntityHash(entity)] = entity;
         return this;
@@ -87,7 +87,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity|null entity If entity is not managed no exception will be thrown
      * @throws \Ouchbase\Exception\EntityModifiedException
      */
-    public function commit(<Ouchbase\Entity> entity = null)
+    public function commit(<\Ouchbase\Entity> entity = null)
     {
         var e;
         try {
@@ -133,7 +133,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity|null entity
      * @return this
      */
-    private function commitInserts(<Ouchbase\Entity> entity = null) -> <Ouchbase\UnitOfWork>
+    private function commitInserts(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
         if null !== entity {
             var hash;
@@ -161,7 +161,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity|null entity
      * @return this
      */
-    private function commitDeletes(<Ouchbase\Entity> entity = null) -> <Ouchbase\UnitOfWork>
+    private function commitDeletes(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
         if null !== entity {
             var hash;
@@ -190,7 +190,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity|null entity
      * @return this
      */
-    private function commitUpdates(<Ouchbase\Entity> entity = null) -> <Ouchbase\UnitOfWork>
+    private function commitUpdates(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
         if null !== entity {
             var hash;
@@ -216,7 +216,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    private function rollbackUpdates(<Ouchbase\IdentityMap> im, <Ouchbase\Entity> entity = null) -> <Ouchbase\UnitOfWork>
+    private function rollbackUpdates(<\Ouchbase\IdentityMap> im, <\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
         var repository, hash = null, data;
         if null !== entity {
@@ -240,7 +240,7 @@ class UnitOfWork
      * @param \Ouchbase\Entity entity
      * @return this
      */
-    private function rollbackDeletes(<Ouchbase\IdentityMap> im, <Ouchbase\Entity> entity) -> <Ouchbase\UnitOfWork>
+    private function rollbackDeletes(<\Ouchbase\IdentityMap> im, <\Ouchbase\Entity> entity) -> <\Ouchbase\UnitOfWork>
     {
         var repository, hash = null, data;
         if null !== entity {
@@ -262,7 +262,7 @@ class UnitOfWork
     /**
      * @return this
      */
-    public function clear() -> <Ouchbase\UnitOfWork>
+    public function clear() -> <\Ouchbase\UnitOfWork>
     {
         let this->persisted = [],
             this->deleted = [],

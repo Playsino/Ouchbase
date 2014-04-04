@@ -44,7 +44,7 @@ class EntityProxy implements \Ouchbase\Entity
      * @throws \Exception
      * @return \Ouchbase\Entity
      */
-    public function getEntity() -> <Ouchbase\Entity>
+    public function getEntity() -> <\Ouchbase\Entity>
     {
         if !this->entity {
             let this->entity = call_user_func(this->creator);

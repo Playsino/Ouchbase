@@ -8,7 +8,7 @@ class _etc
      */
     public static function getEntityClass(entity) -> string
     {
-        if entity instanceof Ouchbase\EntityProxy {
+        if entity instanceof \Ouchbase\EntityProxy {
             return get_class(entity->getEntity());
         }
 

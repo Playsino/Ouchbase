@@ -24,7 +24,7 @@ class IdentityMap
      * @return this
      * @throws \Ouchbase\Exception\EntityLogicException
      */
-    public function register(<Ouchbase\Entity> entity, data) -> <Ouchbase\IdentityMap>
+    public function register(<\Ouchbase\Entity> entity, data) -> <\Ouchbase\IdentityMap>
     {
         var hash;
         let hash = \Ouchbase\_etc::getEntityHash(entity);
@@ -43,7 +43,7 @@ class IdentityMap
      * @return this
      * @throws \Ouchbase\Exception\EntityLogicException
      */
-    public function unregister(<Ouchbase\Entity> entity) -> <Ouchbase\IdentityMap>
+    public function unregister(<\Ouchbase\Entity> entity) -> <\Ouchbase\IdentityMap>
     {
         var hash;
         let hash = \Ouchbase\_etc::getEntityHash(entity);
@@ -63,7 +63,7 @@ class IdentityMap
      * @param \Ouchbase\Entity entity
      * @return bool
      */
-    public function contains(<Ouchbase\Entity> entity) -> boolean
+    public function contains(<\Ouchbase\Entity> entity) -> boolean
     {
         return isset this->entities[\Ouchbase\_etc::getEntityHash(entity)];
     }
@@ -87,7 +87,7 @@ class IdentityMap
      * @param \Ouchbase\Entity entity
      * @return array|null
      */
-    public function getOriginalData(<Ouchbase\Entity> entity)
+    public function getOriginalData(<\Ouchbase\Entity> entity)
     {
         var data;
         if fetch data, this->originalData[\Ouchbase\_etc::getEntityHash(entity)] {
@@ -102,7 +102,7 @@ class IdentityMap
      * @param array data
      * @return this
      */
-    public function updateOriginalData(<Ouchbase\Entity> entity, data) -> <Ouchbase\IdentityMap>
+    public function updateOriginalData(<\Ouchbase\Entity> entity, data) -> <\Ouchbase\IdentityMap>
     {
         let this->originalData[\Ouchbase\_etc::getEntityHash(entity)] = data;
         return this;
@@ -111,7 +111,7 @@ class IdentityMap
     /**
      * @return this
      */
-    public function clear() -> <Ouchbase\IdentityMap>
+    public function clear() -> <\Ouchbase\IdentityMap>
     {
         let this->entities = [],
             this->originalData = [];
