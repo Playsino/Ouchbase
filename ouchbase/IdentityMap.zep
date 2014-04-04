@@ -27,7 +27,7 @@ class IdentityMap
     public function register(<Ouchbase\Entity> entity, data) -> <Ouchbase\IdentityMap>
     {
         var hash;
-        let hash = Ouchbase\_etc::getEntityHash(entity);
+        let hash = \Ouchbase\_etc::getEntityHash(entity);
         if isset this->entities[hash] {
             throw new EntityLogicException(entity, "is already registered in the identity map");
         }
@@ -46,13 +46,15 @@ class IdentityMap
     public function unregister(<Ouchbase\Entity> entity) -> <Ouchbase\IdentityMap>
     {
         var hash;
-        let hash = Ouchbase\_etc::getEntityHash(entity);
+        let hash = \Ouchbase\_etc::getEntityHash(entity);
         if !(isset this->entities[hash]) {
             throw new EntityLogicException(entity, "is not registered in the identity map");
         }
 
-        array_splice(this->entities, array_search(hash, this->entities), 1);
-        array_splice(this->originalData, array_search(hash, this->originalData), 1);
+        unset this->entities[hash];
+        unset this->originalData[hash];
+        //array_splice(this->entities, array_search(hash, this->entities), 1);
+        //array_splice(this->originalData, array_search(hash, this->originalData), 1);
 
         return this;
     }
@@ -63,7 +65,7 @@ class IdentityMap
      */
     public function contains(<Ouchbase\Entity> entity) -> boolean
     {
-        return isset this->entities[Ouchbase\_etc::getEntityHash(entity)];
+        return isset this->entities[\Ouchbase\_etc::getEntityHash(entity)];
     }
 
     /**
@@ -74,7 +76,7 @@ class IdentityMap
     public function getEntity(string className, id)
     {
         var entity;
-        if fetch entity, this->entities[Ouchbase\_etc::getEntityHash(className, id)] {
+        if fetch entity, this->entities[\Ouchbase\_etc::getEntityHash(className, id)] {
             return entity;
         }
 
@@ -88,7 +90,7 @@ class IdentityMap
     public function getOriginalData(<Ouchbase\Entity> entity)
     {
         var data;
-        if fetch data, this->originalData[Ouchbase\_etc::getEntityHash(entity)] {
+        if fetch data, this->originalData[\Ouchbase\_etc::getEntityHash(entity)] {
             return data;
         }
 
@@ -102,7 +104,7 @@ class IdentityMap
      */
     public function updateOriginalData(<Ouchbase\Entity> entity, data) -> <Ouchbase\IdentityMap>
     {
-        let this->originalData[Ouchbase\_etc::getEntityHash(entity)] = data;
+        let this->originalData[\Ouchbase\_etc::getEntityHash(entity)] = data;
         return this;
     }
 

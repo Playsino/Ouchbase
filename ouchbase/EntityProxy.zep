@@ -53,7 +53,7 @@ class EntityProxy implements \Ouchbase\Entity
                 throw new \Exception("Object was not created");
             }
 
-            unset(this->creator);
+            let this->creator = null;
         }
 
         return this->entity;

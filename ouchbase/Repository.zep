@@ -52,7 +52,7 @@ abstract class Repository
      * @param bool concurrent
      * @return \Ouchbase\Entity|null
      */
-    public function find(id, boolean concurrent = false) -> <Ouchbase\Entity>
+    public function find(id, boolean concurrent = false) -> <Ouchbase\Entity>|null
     {
         var entity;
         let entity = this->im->getEntity(this->className, id);
@@ -61,7 +61,7 @@ abstract class Repository
         }
 
         var cas, data, dataWithCas;
-        let dataWithCas = this->executeWithoutTimeouts([self, "__getWithCas"], entity->getId());
+        let dataWithCas = this->executeWithoutTimeouts([this, "__getWithCas"], entity->getId());
         let data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
@@ -98,13 +98,13 @@ abstract class Repository
 
         // todo Remove code duplication with find
         var cas, data, dataWithCas;
-        let dataWithCas = this->executeWithoutTimeouts([self, "__getWithCas"], entity->getId());
+        let dataWithCas = this->executeWithoutTimeouts([this, "__getWithCas"], entity->getId());
         let data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
         if !data {
             // todo Throw exception here?
-            return null;
+            return this;
         }
 
         if !is_array(data) {
@@ -117,6 +117,7 @@ abstract class Repository
         // The following code could be moved into updateExistingEntity method
         this->im->updateOriginalData(entity, data);
 
+        var property;
         for property in this->getClassReflection()->getProperties() {
             let property = this->getPropertyReflection(property->getName());
             property->setValue(entity, property->getValue(refreshed));
@@ -136,12 +137,10 @@ abstract class Repository
      */
     public function findAll(ids, boolean concurrent = false)
     {
-        var entity, entities, cas, data, dataWithCas;
-        let entities = [];
-
-        var cas, data, dataWithCas;
-        let dataWithCas = this->executeWithoutTimeouts([self, "__getMultiWithCas"], ids);
-        let data = dataWithCas["data"],
+        var entity, entities, cas, data, dataWithCas, id, entityData;
+        let entities = [],
+            dataWithCas = this->executeWithoutTimeouts([this, "__getMultiWithCas"], ids),
+            data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
         for id, entityData in data {
@@ -191,7 +190,7 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return this
      */
-    public function update(entity, cas) -> <Ouchbase\Repository>
+    public function update(<Ouchbase\Entity> entity, cas) -> <Ouchbase\Repository>
     {
         // todo Diff calculation is responsibility of unit of work
         if entity instanceof Ouchbase\EntityProxy {
@@ -248,12 +247,11 @@ abstract class Repository
             this->executeWithoutTimeouts("delete", self::getKey(entity->getId()));
         }
         else {
-            // todo Figure out how to be with try/catch block
+            var e;
             try {
                 this->executeWithoutTimeouts("delete", self::getKey(entity->getId()), cas);
             }
-            catch (\CouchbaseKeyMutatedException e) {
-                var e;
+            catch \CouchbaseKeyMutatedException, e {
                 let e = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
                 e->setAction(\Ouchbase\Exception\EntityModifiedException::ACTION_DELETE);
 
@@ -283,14 +281,15 @@ abstract class Repository
     {
         int attempts = 0;
         while attempts < 3 {
+            var e;
             try {
                 if is_string(command) {
-                    return call_user_func_array(array(this->cb, command), array_slice(func_get_args(), 1));
+                    return call_user_func_array([this->cb, command], array_slice(func_get_args(), 1));
                 }
 
                 return command(this->cb);
             }
-            catch (\CouchbaseLibcouchbaseException e) { let ++attempts; }
+            catch \CouchbaseLibcouchbaseException, e { let attempts = attempts + 1; }
         }
 
         throw e;
@@ -300,7 +299,7 @@ abstract class Repository
      * @param int|string id
      * @return string
      */
-    private static function getKey(id) -> string
+    private function getKey(id) -> string
     {
         return this->keyPrefix . id;
     }
@@ -315,7 +314,7 @@ abstract class Repository
             let reflection = new \ReflectionClass(this->className);
             let this->_reflections[this->className] = [
                 "class": reflection,
-                "properties": [],
+                "properties": []
             ];
         }
 
@@ -326,13 +325,13 @@ abstract class Repository
      * @param string property
      * @return \ReflectionProperty
      */
-    private function getPropertyReflection(property) -> <ReflectionProperty>
+    private function getPropertyReflection(string property) -> <ReflectionProperty>
     {
         if !isset this->_reflections[this->className]["properties"][property] {
             var reflection;
-            let reflection = this->getClassReflection(this->className)->getProperty(property);
+            let reflection = this->getClassReflection()->getProperty(property);
             reflection->setAccessible(true);
-            this->_reflections[this->className]["properties"][property] = reflection;
+            let this->_reflections[this->className]["properties"][property] = reflection;
         }
 
         return this->_reflections[this->className]["properties"][property];
@@ -345,6 +344,7 @@ abstract class Repository
     public function __getWithCas(id)
     {
         var cas, data;
+        let cas = null;
         let data = this->cb->get(self::getKey(id), null, cas);
 
         return ["data": data, "cas": cas];
@@ -356,26 +356,26 @@ abstract class Repository
      */
     public function __getMultiWithCas(ids)
     {
-        var idsToKeys, keysToCas, cas, data;
+        var idsToKeys, keysToCas, cas, data, id;
         let idsToKeys = [],
             keysToCas = [],
             cas = [];
 
-        foreach (ids as id) {
+        for id in ids {
             let idsToKeys[id] = self::getKey(id);
         }
 
         let data = this->cb->getMulti(idsToKeys, keysToCas);
 
-        foreach (ids as id) {
+        for id in ids {
             let cas[id] = keysToCas[idsToKeys[id]];
         }
 
         return ["data": data, "cas": cas];
     }
 
-    abstract public function toArray(<Ouchbase\Entity> $entity) -> [];
+    abstract public function toArray(<Ouchbase\Entity> entity) {}
 
-    abstract public function toObject($data) -> <Ouchbase\Entity>;
+    abstract public function toObject(data) -> <Ouchbase\Entity> {}
 
 }
