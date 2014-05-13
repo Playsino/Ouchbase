@@ -53,12 +53,12 @@ class TestEntityRepository extends Repository
     /**
      * @var string
      */
-    public static $keyPrefix = 'test:';
+    public $keyPrefix = 'test:';
 
     /**
      * @var string
      */
-    protected static $className = 'OuchbaseTest\TestEntity';
+    protected $className = 'OuchbaseTest\TestEntity';
 
     /**
      * @param array $data
@@ -80,63 +80,5 @@ class TestEntityRepository extends Repository
             'property' => $entity->getProperty(),
         );
     }
-
-}
-
-class IdentityMapMock extends IdentityMap
-{
-    public function register($entity, $data) { return $this; }
-
-    public function unregister($entity) { return $this; }
-
-    public function getEntity($className, $id) { return null; }
-
-    public function contains($entity) { return false; }
-
-    public function getOriginalData($entity) { return null; }
-
-    public function updateOriginalData($entity, $data) { return $this; }
-
-    public function clear() { return $this; }
-
-}
-
-class UnitOfWorkMock extends UnitOfWork
-{
-    public function persist($entity, $cas = null) { return $this; }
-
-    public function delete($entity) { return $this; }
-
-    public function insert($entity) { return $this; }
-
-    public function commit($entity = null) { return $this; }
-
-    public function clear() { return $this; }
-
-}
-
-class EntityManagerMock extends EntityManager
-{
-    public function __construct(\Couchbase $couchbase)
-    {
-        $this->im = new IdentityMapMock();
-        $this->uow = new UnitOfWorkMock($this, $this->im);
-        $this->cb = $couchbase;
-    }
-
-    public function getIm() { return $this->im; }
-    public function getUoW() { return $this->uow; }
-
-    public function persist($entity /*, todo $ttl ??? */) { return $this; }
-
-    public function delete($entity) { return $this; }
-
-    public function refresh($entity, $concurrent = false) { return $this; }
-
-    public function flush() { return $this; }
-
-    public function clear() { return $this; }
-
-    public function update($entity, $callback /*, $arg1, $arg2 */) { return $this; }
 
 }

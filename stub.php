@@ -14,6 +14,11 @@ interface Entity
 class EntityManager
 {
     /**
+     * @param \Couchbase $couchbase
+     */
+    public function __construct(\Couchbase $couchbase) {}
+
+    /**
      * @param string $entityClassName
      * @param string $entityRepositoryClassName
      * @return $this
@@ -219,7 +224,7 @@ class Repository
      * @param string|null $cas
      * @return $this
      */
-    public function update(Entity $entity, $cas) {}
+    public function update(Entity $entity, $cas = null) {}
 
     /**
      * @param Entity $entity
@@ -227,7 +232,7 @@ class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return $this
      */
-    public function delete(Entity $entity, $cas) {}
+    public function delete(Entity $entity, $cas = null) {}
 
     /**
      * @param int|string $id

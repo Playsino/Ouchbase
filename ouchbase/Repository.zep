@@ -6,13 +6,13 @@ abstract class Repository
      * Override this property in subclasses
      * @var string
      */
-    protected static keyPrefix = "";
+    protected keyPrefix = "";
 
     /**
      * Override this property in subclasses
      * @var string
      */
-    protected static className;
+    protected className;
 
     /**
      * @var \Ouchbase\UnitOfWork
@@ -30,9 +30,14 @@ abstract class Repository
     protected cb;
 
     /**
-     * @var array
+     * @var \ReflectionClass
      */
-    private _reflections;
+    protected _classReflection;
+
+    /**
+     * @var \ReflectionProperty[]
+     */
+    protected _propertyReflections;
 
     /**
      * @param \Ouchbase\UnitOfWork unitOfWork
@@ -44,7 +49,7 @@ abstract class Repository
         let this->uow = unitOfWork;
         let this->im = identityMap;
         let this->cb = couchbase;
-        let this->_reflections = [];
+        let this->_propertyReflections = [];
     }
 
     /**
@@ -55,13 +60,13 @@ abstract class Repository
     public function find(id, boolean concurrent = false) -> <\Ouchbase\Entity>|null
     {
         var entity;
-        let entity = this->im->getEntity(self::className, id);
+        let entity = this->im->getEntity(this->className, id);
         if entity {
             return entity;
         }
 
         var cas, data, dataWithCas;
-        let dataWithCas = this->executeWithoutTimeouts([this, "__getWithCas"], entity->getId());
+        let dataWithCas = this->executeWithoutTimeouts("__getWithCas", [id]);
         let data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
@@ -92,13 +97,13 @@ abstract class Repository
             throw new \Ouchbase\Exception\EntityLogicException(entity, "was not persisted");
         }
 
-        if entity instanceof Ouchbase\EntityProxy {
+        if entity instanceof \Ouchbase\EntityProxy {
             let entity = entity->_getObject();
         }
 
         // todo Remove code duplication with find
         var cas, data, dataWithCas;
-        let dataWithCas = this->executeWithoutTimeouts([this, "__getWithCas"], entity->getId());
+        let dataWithCas = this->executeWithoutTimeouts("__getWithCas", [entity->getId()]);
         let data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
@@ -117,10 +122,10 @@ abstract class Repository
         // The following code could be moved into updateExistingEntity method
         this->im->updateOriginalData(entity, data);
 
-        var property;
-        for property in this->getClassReflection()->getProperties() {
-            let property = this->getPropertyReflection(property->getName());
-            property->setValue(entity, property->getValue(refreshed));
+        var property, propertyReflection;
+        for property in  this->getClassReflection()->getProperties() {
+            let propertyReflection = this->getPropertyReflection(property->getName());
+            propertyReflection->setValue(entity, propertyReflection->getValue(refreshed));
         }
 
         if concurrent {
@@ -139,12 +144,12 @@ abstract class Repository
     {
         var entity, entities, cas, data, dataWithCas, id, entityData;
         let entities = [],
-            dataWithCas = this->executeWithoutTimeouts([this, "__getMultiWithCas"], ids),
+            dataWithCas = this->executeWithoutTimeouts("__getMultiWithCas", [ids]),
             data = dataWithCas["data"],
             cas = dataWithCas["cas"];
 
         for id, entityData in data {
-            let entity = this->im->getEntity(self::className, id);
+            let entity = this->im->getEntity(this->className, id);
             if entity {
                 // todo Refresh here?
                 let entities[] = entity;
@@ -174,7 +179,7 @@ abstract class Repository
     {
         var data;
         let data = this->toArray(entity);
-        this->executeWithoutTimeouts("set", self::getKey(entity->getId()), json_encode(data));
+        this->executeWithoutTimeouts("set", [this->getKey(entity->getId()), json_encode(data)]);
         this->uow->persist(entity);
         this->im->updateOriginalData(entity, data); // We register entity in IM in EM on persist
 
@@ -190,10 +195,10 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return this
      */
-    public function update(<\Ouchbase\Entity> entity, cas) -> <\Ouchbase\Repository>
+    public function update(<\Ouchbase\Entity> entity, cas = null) -> <\Ouchbase\Repository>
     {
         // todo Diff calculation is responsibility of unit of work
-        if entity instanceof Ouchbase\EntityProxy {
+        if entity instanceof \Ouchbase\EntityProxy {
             if !entity->isProxied() {
                 // Nothing changed
                 return this;
@@ -218,11 +223,11 @@ abstract class Repository
         this->im->updateOriginalData(entity, data);
 
         if !cas {
-            this->executeWithoutTimeouts("replace", self::getKey(entity->getId()), json_encode(data));
+            this->executeWithoutTimeouts("replace", [this->getKey(entity->getId()), json_encode(data)]);
             return this;
         }
 
-        if !this->executeWithoutTimeouts("replace", self::getKey(entity->getId()), json_encode(data), 0, cas) {
+        if !this->executeWithoutTimeouts("replace", [this->getKey(entity->getId()), json_encode(data), 0, cas]) {
             var e;
             let e = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
             e->setAction(\Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
@@ -241,15 +246,15 @@ abstract class Repository
      * @throws \Ouchbase\Exception\EntityModifiedException
      * @return this
      */
-    public function delete(<\Ouchbase\Entity> entity, cas) -> <\Ouchbase\Repository>
+    public function delete(<\Ouchbase\Entity> entity, cas = null) -> <\Ouchbase\Repository>
     {
         if !cas {
-            this->executeWithoutTimeouts("delete", self::getKey(entity->getId()));
+            this->executeWithoutTimeouts("delete", [this->getKey(entity->getId())]);
         }
         else {
             var e;
             try {
-                this->executeWithoutTimeouts("delete", self::getKey(entity->getId()), cas);
+                this->executeWithoutTimeouts("delete", [this->getKey(entity->getId()), cas]);
             }
             catch \CouchbaseKeyMutatedException, e {
                 let e = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
@@ -273,23 +278,25 @@ abstract class Repository
      *
      * Passing callback is needed for Couchbase commands that take arguments by reference
      *
-     * @param callable|string command Couchbase command or callback that takes Couchbase instance as an argument or
+     * @param callable|string command Couchbase or class method
+     * @param array args Command args (optional)
      * @throws \CouchbaseLibcouchbaseException
      * @return mixed
      */
-    protected function executeWithoutTimeouts(command)
+    protected function executeWithoutTimeouts(string method, array args = [])
     {
+        var e;
         int attempts = 0;
         while attempts < 3 {
-            var e;
             try {
-                if is_string(command) {
-                    return call_user_func_array([this->cb, command], array_slice(func_get_args(), 1));
+                if !(substr(method, 0, 2) == "__") { // hack :)
+                    return call_user_func_array([this->cb, method], args);
                 }
-
-                return command(this->cb);
+                return call_user_func_array([this, method], args);
             }
-            catch \CouchbaseLibcouchbaseException, e { let attempts = attempts + 1; }
+            catch \CouchbaseLibcouchbaseException, e {
+                let attempts = attempts + 1;
+            }
         }
 
         throw e;
@@ -301,40 +308,35 @@ abstract class Repository
      */
     public function getKey(id) -> string
     {
-        return self::keyPrefix . id;
+        return this->keyPrefix . id;
     }
 
     /**
      * @return \ReflectionClass
      */
-    private function getClassReflection() -> <ReflectionClass>
+    protected function getClassReflection() -> <\ReflectionClass>
     {
-        if !isset this->_reflections[self::className] {
-            var reflection;
-            let reflection = new \ReflectionClass(self::className);
-            let this->_reflections[self::className] = [
-                "class": reflection,
-                "properties": []
-            ];
+        if !this->_classReflection {
+            let this->_classReflection = new \ReflectionClass(this->className);
         }
 
-        return this->_reflections[self::className]["class"];
+        return this->_classReflection;
     }
 
     /**
      * @param string property
      * @return \ReflectionProperty
      */
-    private function getPropertyReflection(string property) -> <ReflectionProperty>
+    protected function getPropertyReflection(string property) -> <\ReflectionProperty>
     {
-        if !isset this->_reflections[self::className]["properties"][property] {
+        if !isset this->_propertyReflections[property] {
             var reflection;
             let reflection = this->getClassReflection()->getProperty(property);
             reflection->setAccessible(true);
-            let this->_reflections[self::className]["properties"][property] = reflection;
+            let this->_propertyReflections[property] = reflection;
         }
 
-        return this->_reflections[self::className]["properties"][property];
+        return this->_propertyReflections[property];
     }
 
     /**
@@ -345,7 +347,7 @@ abstract class Repository
     {
         var cas, data;
         let cas = null;
-        let data = this->cb->get(self::getKey(id), null, cas);
+        let data = this->cb->get(this->getKey(id), null, cas);
 
         return ["data": data, "cas": cas];
     }
@@ -362,7 +364,7 @@ abstract class Repository
             cas = [];
 
         for id in ids {
-            let idsToKeys[id] = self::getKey(id);
+            let idsToKeys[id] = this->getKey(id);
         }
 
         let data = this->cb->getMulti(idsToKeys, keysToCas);

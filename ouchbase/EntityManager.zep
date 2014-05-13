@@ -13,22 +13,22 @@ abstract class EntityManager
     /**
      * @var \Ouchbase\UnitOfWork
      */
-    private uow;
+    protected uow;
 
     /**
      * @var \Ouchbase\IdentityMap
      */
-    private im;
+    protected im;
 
     /**
      * @var \Couchbase
      */
-    private cb;
+    protected cb;
 
     /**
      * @var \Ouchbase\Repository[]
      */
-    private _repositories = [];
+    protected _repositories = [];
 
     /**
      * @param \Couchbase couchbase
@@ -73,8 +73,6 @@ abstract class EntityManager
      */
     public function getRepository(string entityClassName) -> <\Ouchbase\Repository>
     {
-        echo "getRepository\n";
-        error_log("getRepository");
         if is_object(entityClassName) {
             let entityClassName = \Ouchbase\_etc::getEntityClass(entityClassName);
         }
@@ -88,20 +86,9 @@ abstract class EntityManager
      */
     protected function getCachedRepository(string repositoryClassName) -> <\Ouchbase\Repository>
     {
-        echo "here - 0\n";
-        error_log("here - 0");
         if !(isset this->_repositories[repositoryClassName]) {
-            echo "here - 1\n";
-            error_log("here - 1");
-            echo repositoryClassName;
-            echo "here - 2\n";
-            error_log(repositoryClassName);
-            error_log("here - 2");
             let this->_repositories[repositoryClassName] = new {repositoryClassName}(this->uow, this->im, this->cb);
         }
-
-        echo "here - 3\n";
-        error_log("here - 3");
 
         return this->_repositories[repositoryClassName];
     }
