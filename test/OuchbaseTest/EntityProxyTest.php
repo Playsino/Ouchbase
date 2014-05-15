@@ -2,7 +2,7 @@
 
 namespace OuchbaseTest;
 
-require_once '_etc.php';
+require_once __DIR__ . '/../_etc.php';
 
 class EntityProxyTest extends \PHPUnit_Framework_TestCase
 {

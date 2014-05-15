@@ -2,7 +2,7 @@
 
 namespace OuchbaseTest;
 
-require_once '_etc.php';
+require_once __DIR__ . '/../_etc.php';
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,8 +37,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     protected function getCb()
     {
         if (!self::$_cb) {
-            global $couchbase;
-            self::$_cb = $couchbase;
+            self::$_cb = new \Couchbase('localhost');
         }
 
         return self::$_cb;

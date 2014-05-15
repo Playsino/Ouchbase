@@ -1,6 +1,6 @@
 <phpunit bootstrap="./bootstrap.php">
     <testsuite name="Ouchbase Tests">
-        <directory>.</directory>
+        <directory>OuchbaseTest</directory>
     </testsuite>
 
     <logging>

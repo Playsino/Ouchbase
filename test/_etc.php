@@ -3,10 +3,7 @@
 namespace OuchbaseTest;
 
 use Ouchbase\Entity;
-use Ouchbase\EntityManager;
-use Ouchbase\IdentityMap;
 use Ouchbase\Repository;
-use Ouchbase\UnitOfWork;
 
 class TestEntity implements Entity
 {
