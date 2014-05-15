@@ -1,6 +1,6 @@
 namespace Ouchbase\Exception;
 
-class EntityLogicException extends \Exception
+class EntityLogicException extends \LogicException
 {
     public function __construct(<\Ouchbase\Entity> entity, string message = "", int code = 0, <Exception> previous = null)
     {

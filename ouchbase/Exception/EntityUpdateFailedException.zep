@@ -1,3 +1,3 @@
 namespace Ouchbase\Exception;
 
-class EntityUpdateFailedException extends \Exception {}
+class EntityUpdateFailedException extends \RuntimeException {}

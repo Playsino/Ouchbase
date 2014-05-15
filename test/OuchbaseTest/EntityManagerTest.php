@@ -40,4 +40,12 @@ class EntityManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('OuchbaseTest\TestEntityRepository', $this->em->getRepository(new TestEntity('test-id', 42)));
     }
 
+    /**
+     * @expectedException \Ouchbase\Exception\EntityManagerException
+     */
+    public function testRegisterManagedEntityClassInExceptionalSituation()
+    {
+        $this->em->getRepository('OuchbaseTest\TestEntity');
+    }
+
 }

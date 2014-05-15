@@ -74,6 +74,12 @@ class EntityManager
             let entityClassName = \Ouchbase\_etc::getEntityClass(entityClassName);
         }
 
+        if !isset this->entityRepositories[entityClassName] {
+            throw new \Ouchbase\Exception\EntityManagerException(sprintf(
+                "Repository for '%s' was not registered in the entity manager", entityClassName
+            ));
+        }
+
         return this->getCachedRepository(this->entityRepositories[entityClassName]);
     }
 

@@ -297,7 +297,9 @@ class UnitOfWork
 
 namespace Ouchbase\Exception;
 
-class EntityLogicException extends \Exception {}
+class EntityManagerException extends \LogicException {}
+
+class EntityLogicException extends \LogicException {}
 
 class EntityModifiedException extends \Ouchbase\Exception\EntityLogicException
 {
@@ -321,4 +323,4 @@ class EntityModifiedException extends \Ouchbase\Exception\EntityLogicException
 
 }
 
-class EntityUpdateFailedException extends \Exception {}
+class EntityUpdateFailedException extends \RuntimeException {}
