@@ -87,23 +87,32 @@ class UnitOfWork
      * @param \Ouchbase\Entity|null entity If entity is not managed no exception will be thrown
      * @throws \Ouchbase\Exception\EntityModifiedException
      */
-    public function commit(<\Ouchbase\Entity> entity = null)
+    public function commit(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
+        error_log("UnitOfWork::commit(): before try/catch");
         var e;
         try {
+            error_log("UnitOfWork::commit(): in try");
             // In case of rollback original data will be taken from im because
             // original data in this->im will be updated after each particular update
             var im;
+            error_log("UnitOfWork::commit(): before clone");
             let im = clone this->im;
 
+            error_log("UnitOfWork::commit(): before uow::commitUpdates()");
             this->commitUpdates(entity);
+            error_log("UnitOfWork::commit(): before uow::commitDeletes()");
             this->commitDeletes(entity);
             // Inserts should go last because they don't throw \Ouchbase\Exception\EntityModifiedException
             // and also inserted entities become persisted after insert so don't want
             // them to be checked during commitUpdates
+            error_log("UnitOfWork::commit(): before uow::commitInserts()");
             this->commitInserts(entity);
+            error_log("UnitOfWork::commit(): after uow::commitInserts()");
+            return this;
         }
-        catch \Ouchbase\Exception\EntityModifiedException, e {
+        catch \Ouchbase\Exception\EntityModifiedException|Exception, e {
+            error_log("UnitOfWork::commit(): in catch");
             // If we tried to update only one entity then no rollback is needed
             if null !== entity {
                 throw e;
@@ -127,6 +136,8 @@ class UnitOfWork
 
             throw e;
         }
+        error_log("UnitOfWork::commit(): before return");
+        return this;
     }
 
     /**
@@ -135,7 +146,9 @@ class UnitOfWork
      */
     private function commitInserts(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
+        error_log("UnitOfWork::commitInserts(): before if");
         if null !== entity {
+            error_log("UnitOfWork::commitInserts(): in if");
             var hash;
             let hash = \Ouchbase\_etc::getEntityHash(entity);
             if hash && isset this->inserted[hash] {
@@ -147,13 +160,14 @@ class UnitOfWork
 
             throw new \Ouchbase\Exception\EntityLogicException(entity, "was not persisted");
         }
-
+        error_log("UnitOfWork::commitInserts(): before loop");
         for entity in this->inserted {
+            error_log("UnitOfWork::commitInserts(): in loop");
             this->em->getRepository(entity)->insert(entity);
         }
-
+        error_log("UnitOfWork::commitInserts(): after loop");
         let this->inserted = [];
-
+        error_log("UnitOfWork::commitInserts(): before return");
         return this;
     }
 
