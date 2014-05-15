@@ -1,9 +1,6 @@
 namespace Ouchbase;
 
-/**
- * @todo Register managed models instead of extending from EntityManager
- */
-abstract class EntityManager
+class EntityManager
 {
     /**
      * @var array
@@ -68,10 +65,10 @@ abstract class EntityManager
     }
     
     /**
-     * @param string entityClassName
+     * @param string|\Ouchbase\Entity entityClassName
      * @return \Ouchbase\Repository
      */
-    public function getRepository(string entityClassName) -> <\Ouchbase\Repository>
+    public function getRepository(entityClassName) -> <\Ouchbase\Repository>
     {
         if is_object(entityClassName) {
             let entityClassName = \Ouchbase\_etc::getEntityClass(entityClassName);
