@@ -140,9 +140,7 @@ class EntityManager
      */
     public function flush() -> <\Ouchbase\EntityManager>
     {
-        error_log("EntityManager::flush(): before uow::commit()");
         this->uow->commit();
-        error_log("EntityManager::flush(): after uow::commit()");
         return this;
     }
 
@@ -151,11 +149,8 @@ class EntityManager
      */
     public function clear() -> <\Ouchbase\EntityManager>
     {
-        error_log("EntityManager::clear(): before im::clear()");
         this->im->clear();
-        error_log("EntityManager::clear(): before uow::clear()");
         this->uow->clear();
-        error_log("EntityManager::clear(): before return");
         return this;
     }
 

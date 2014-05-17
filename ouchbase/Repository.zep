@@ -248,31 +248,22 @@ abstract class Repository
      */
     public function delete(<\Ouchbase\Entity> entity, cas = null) -> <\Ouchbase\Repository>
     {
-        error_log("Repository::delete()");
         if !cas {
-            error_log("Repository::delete(): deleting without cas");
             this->executeWithoutTimeouts("delete", [this->getKey(entity->getId())]);
-
             this->im->unregister(entity);
             return this;
         }
-        error_log("Repository::delete(): deleting with cas");
+
         var e;
         try {
-            error_log("Repository::delete(): before Repository::executeWithoutTimeouts()");
             this->executeWithoutTimeouts("delete", [this->getKey(entity->getId()), cas]);
-            error_log("Repository::delete(): after Repository::executeWithoutTimeouts()");
             this->im->unregister(entity);
-            error_log("Repository::delete(): after IdenitytMap::executeWithoutTimeouts()");
             return this;
         }
         catch \CouchbaseKeyMutatedException, e {
-            error_log("Repository::delete(): in the catch");
             var ex;
             let ex = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
-            error_log("Repository::delete(): in the catch, before set action");
             ex->setAction(\Ouchbase\Exception\EntityModifiedException::ACTION_DELETE);
-            error_log("Repository::delete(): in the catch, before throw");
             throw ex;
         }
 
@@ -295,20 +286,16 @@ abstract class Repository
      */
     protected function executeWithoutTimeouts(string method, array args = [])
     {
-        error_log("Repository::executeWithoutTimeouts()");
         var e;
         int attempts = 0;
         while attempts < 3 {
-            error_log("Repository::executeWithoutTimeouts(): in the loop, attempt #" . attempts);
             try {
                 if !(substr(method, 0, 2) == "__") { // hack :)
-                    error_log("Repository::executeWithoutTimeouts(): calling cb method " . method . " with args " . json_encode(args));
                     return call_user_func_array([this->cb, method], args);
                 }
                 return call_user_func_array([this, method], args);
             }
             catch \CouchbaseLibcouchbaseException, e {
-                error_log("Repository::executeWithoutTimeouts(): in the catch");
                 let attempts = attempts + 1;
             }
         }

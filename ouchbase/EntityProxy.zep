@@ -41,8 +41,8 @@ class EntityProxy implements \Ouchbase\Entity
     }
 
     /**
-     * @throws \Exception
      * @return \Ouchbase\Entity
+     * @throws \Ouchbase\Exception\EntityLogicException
      */
     public function getEntity() -> <\Ouchbase\Entity>
     {
@@ -50,7 +50,7 @@ class EntityProxy implements \Ouchbase\Entity
             let this->entity = call_user_func_array(this->creator, []);
 
             if !this->entity {
-                throw new \Exception("Object was not created");
+                throw new \Ouchbase\Exception\EntityLogicException("Object was not created");
             }
 
             let this->creator = null;

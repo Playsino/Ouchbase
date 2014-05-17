@@ -53,8 +53,6 @@ class IdentityMap
 
         unset this->entities[hash];
         unset this->originalData[hash];
-        //array_splice(this->entities, array_search(hash, this->entities), 1);
-        //array_splice(this->originalData, array_search(hash, this->originalData), 1);
 
         return this;
     }
