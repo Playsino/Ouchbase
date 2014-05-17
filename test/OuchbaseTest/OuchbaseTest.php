@@ -198,4 +198,23 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
         $this->getCb()->delete($this->em->getRepository($entity3)->getKey($entity3->getId()));
     }
 
+    public function testAtomicUpdate()
+    {
+        $entity = new TestEntity('test-id', array('h' => 4, 'w' => 2));
+
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        $this->em->update($entity, function(TestEntity $entity) {
+            $entity->property = array(4 => 'h', 2 => 'w');
+        });
+        $this->em->clear();
+
+        /** @var TestEntity $updated */
+        $updated = $this->em->getRepository($entity)->find($entity->getId());
+        $this->assertEquals($entity->getId(), $updated->getId());
+        $this->assertEquals(array(4 => 'h', 2 => 'w'), $updated->getProperty());
+
+        $this->getCb()->delete($this->em->getRepository($entity)->getKey($entity->getId()));
+    }
 }

@@ -187,7 +187,7 @@ class EntityManager
 
             try {
                 this->uow->commit(entity);
-                let updated = true;
+                return result;
             }
             catch \Ouchbase\Exception\EntityModifiedException, e {
                 usleep(mt_rand(20, 60)); // Lets not kill the db :)

@@ -159,11 +159,9 @@ class UnitOfWork
             if hash && isset this->inserted[hash] {
                 this->em->getRepository(entity)->insert(entity);
                 unset this->inserted[hash];
-
-                return this;
             }
 
-            throw new \Ouchbase\Exception\EntityLogicException(entity, "was not persisted");
+            return this;
         }
         error_log("UnitOfWork::commitInserts(): before loop");
         for entity in this->inserted {
@@ -189,11 +187,9 @@ class UnitOfWork
             if hash && isset this->deleted[hash] {
                 this->em->getRepository(entity)->delete(entity, this->deleted[hash][1]);
                 unset this->deleted[hash];
-
-                return this;
             }
 
-            throw new \Ouchbase\Exception\EntityLogicException(entity, "was not deleted");
+            return this;
         }
 
         error_log("UnitOfWork::commitDeletes(): after if");
@@ -220,10 +216,9 @@ class UnitOfWork
             let hash = \Ouchbase\_etc::getEntityHash(entity);
             if hash && isset this->persisted[hash] {
                 this->em->getRepository(entity)->update(entity, this->persisted[hash][1]);
-                return this;
             }
 
-            throw new \Ouchbase\Exception\EntityLogicException(entity, "was not persisted");
+            return this;
         }
 
         var data;
