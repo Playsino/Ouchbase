@@ -124,6 +124,8 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($e->getAction(), \Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
         }
 
+        $this->em->clear();
+
         /** @var TestEntity $externallyModified1 */
         /** @var TestEntity $externallyModified2 */
         $externallyModified1 = $this->em->getRepository($entity1)->find($entity1->getId());
@@ -180,6 +182,8 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($e->getAction(), \Ouchbase\Exception\EntityModifiedException::ACTION_DELETE);
         }
 
+        $this->em->clear();
+
         /** @var TestEntity $insertedEntity2 */
         /** @var TestEntity $insertedEntity2 */
         /** @var TestEntity $insertedEntity2 */
@@ -217,4 +221,24 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
 
         $this->getCb()->delete($this->em->getRepository($entity)->getKey($entity->getId()));
     }
+
+    public function testRefresh()
+    {
+        $entity = new TestEntity('test-id', array('h' => 4, 'w' => 2));
+
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        $this->getCb()->set($this->em->getRepository($entity)->getKey($entity->getId()), json_encode(array(
+            'id' => $entity->getId(),
+            'property' => array(4 => 'h', 2 => 'w')
+        )));
+
+        $this->em->refresh($entity);
+        $this->assertEquals(array(4 => 'h', 2 => 'w'), $entity->getProperty());
+
+        $this->em->clear();
+        $this->getCb()->delete($this->em->getRepository($entity)->getKey($entity->getId()));
+    }
+
 }
