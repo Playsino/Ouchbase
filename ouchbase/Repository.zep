@@ -250,6 +250,7 @@ abstract class Repository
     {
         if !cas {
             this->executeWithoutTimeouts("delete", [this->getKey(entity->getId())]);
+
             this->im->unregister(entity);
             return this;
         }
@@ -288,7 +289,8 @@ abstract class Repository
     {
         var e;
         int attempts = 0;
-        while attempts < 3 {
+        loop {
+            let attempts = attempts + 1;
             try {
                 if !(substr(method, 0, 2) == "__") { // hack :)
                     return call_user_func_array([this->cb, method], args);
@@ -296,11 +298,20 @@ abstract class Repository
                 return call_user_func_array([this, method], args);
             }
             catch \CouchbaseLibcouchbaseException, e {
-                let attempts = attempts + 1;
+                if attempts > 3 {
+                    throw e;
+                }
+            }
+
+            // This is needed to make Zephir happy :)
+            if attempts > 3 {
+                break;
             }
         }
 
-        throw e;
+        if e {
+            throw e;
+        }
     }
 
     /**
