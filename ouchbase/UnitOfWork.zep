@@ -123,17 +123,22 @@ class UnitOfWork
                 this->rollbackUpdates(im, e->getEntity());
             }
             else {
+                error_log("UnitOfWork::commit(): action is not delete");
                 if e->getAction() === \Ouchbase\Exception\EntityModifiedException::ACTION_DELETE {
+                    error_log("UnitOfWork::commit(): before UnitOfWork::rollbackUpdates()");
                     this->rollbackUpdates(im);
+                    error_log("UnitOfWork::commit(): before UnitOfWork::rollbackDeletes()");
                     this->rollbackDeletes(im, e->getEntity());
+                    error_log("UnitOfWork::commit(): after UnitOfWork::rollbackDeletes()");
                 }
             }
 
             // Clear entity manager because all logic that modified the entities should be
             // re-applied (new values should be re-read from the db and new calculations
             // should be applied)
+            error_log("UnitOfWork::commit(): before EntityManager::clear()");
             this->em->clear();
-
+            error_log("UnitOfWork::commit(): after EntityManager::clear()");
             throw e;
         }
         error_log("UnitOfWork::commit(): before return");
@@ -177,6 +182,7 @@ class UnitOfWork
      */
     private function commitDeletes(<\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
+        error_log("UnitOfWork::commitDeletes(): before if");
         if null !== entity {
             var hash;
             let hash = \Ouchbase\_etc::getEntityHash(entity);
@@ -190,13 +196,16 @@ class UnitOfWork
             throw new \Ouchbase\Exception\EntityLogicException(entity, "was not deleted");
         }
 
+        error_log("UnitOfWork::commitDeletes(): after if");
         var data;
         for data in this->deleted {
+            error_log("UnitOfWork::commitDeletes(): in the loop before deleting");
             this->em->getRepository(data[0])->delete(data[0], data[1]);
+            error_log("UnitOfWork::commitDeletes(): in the loop after deleting");
         }
-
+        error_log("UnitOfWork::commitDeletes(): after the loop");
         let this->deleted = [];
-
+        error_log("UnitOfWork::commitDeletes(): before return");
         return this;
     }
 
@@ -232,12 +241,14 @@ class UnitOfWork
      */
     private function rollbackUpdates(<\Ouchbase\IdentityMap> im, <\Ouchbase\Entity> entity = null) -> <\Ouchbase\UnitOfWork>
     {
+        error_log("UnitOfWork::rollbackUpdates(): before if");
         var repository, hash = null, data;
         if null !== entity {
             let hash = \Ouchbase\_etc::getEntityHash(entity); 
         }
-
+        error_log("UnitOfWork::rollbackUpdates(): after if");
         for data in this->persisted  {
+            error_log("UnitOfWork::rollbackUpdates(): in the loop");
             if hash && \Ouchbase\_etc::getEntityHash(data[0]) === hash {
                 break;
             }
@@ -245,7 +256,7 @@ class UnitOfWork
             let repository = this->em->getRepository(data[0]);
             this->em->getConnection()->replace(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
         }
-
+        error_log("UnitOfWork::rollbackUpdates(): before return");
         return this;
     }
 
@@ -256,12 +267,15 @@ class UnitOfWork
      */
     private function rollbackDeletes(<\Ouchbase\IdentityMap> im, <\Ouchbase\Entity> entity) -> <\Ouchbase\UnitOfWork>
     {
+        error_log("UnitOfWork::rollbackDeletes(): before if");
         var repository, hash = null, data;
         if null !== entity {
             let hash = \Ouchbase\_etc::getEntityHash(entity); 
         }
+        error_log("UnitOfWork::rollbackDeletes(): after if");
 
         for data in this->deleted {
+            error_log("UnitOfWork::rollbackDeletes(): in the loop");
             if hash && \Ouchbase\_etc::getEntityHash(data[0]) === hash {
                 break;
             }
@@ -269,7 +283,7 @@ class UnitOfWork
             let repository = this->em->getRepository(data[0]);
             this->em->getConnection()->set(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
         }
-
+        error_log("UnitOfWork::rollbackDeletes(): before return");
         return this;
     }
 

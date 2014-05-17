@@ -102,11 +102,10 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
         $this->em->flush();
         $this->em->clear();
 
-        /** @var TestEntity $inserted1 */
-        $inserted1 = $this->em->getRepository($entity1)->find($entity1->getId());
-
-        /** @var TestEntity $inserted2 */
-        $inserted2 = $this->em->getRepository($entity2)->find($entity2->getId(), true);
+        /** @var TestEntity $found1 */
+        /** @var TestEntity $found2 */
+        $found1 = $this->em->getRepository($entity1)->find($entity1->getId());
+        $found2 = $this->em->getRepository($entity2)->find($entity2->getId(), true);
 
         // Modify entity 2 outside of Ouchbase
         $this->getCb()->replace(
@@ -114,33 +113,89 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
             json_encode(array('id' => $entity2->getId(), 'property' => array('h' => 2, 'w' => 4)))
         );
 
-        $inserted1->property = array('h' => 2, 'w' => 4);
-        $inserted2->property = array(2 => 'h', 4 => 'w');
+        $found1->property = array('h' => 2, 'w' => 4);
+        $found2->property = array(2 => 'h', 4 => 'w');
 
         try {
             $this->em->flush();
         }
         catch (\Ouchbase\Exception\EntityModifiedException $e) {
-            $this->assertSame($e->getEntity(), $inserted2);
+            $this->assertSame($e->getEntity(), $found2);
             $this->assertSame($e->getAction(), \Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
         }
 
         /** @var TestEntity $externallyModified1 */
-        $externallyModified1 = $this->em->getRepository($entity1)->find($entity1->getId());
-
         /** @var TestEntity $externallyModified2 */
+        $externallyModified1 = $this->em->getRepository($entity1)->find($entity1->getId());
         $externallyModified2 = $this->em->getRepository($entity2)->find($entity2->getId());
 
-        $this->assertEquals($entity1->getId(), $externallyModified1->getId());
-        $this->assertEquals($entity1->getProperty(), $externallyModified1->getProperty());
-        $this->assertEquals($inserted1->getId(), $externallyModified1->getId());
-        $this->assertNotEquals($inserted1->getProperty(), $externallyModified1->getProperty());
+        $this->assertEquals($entity1, $externallyModified1);
+        $this->assertEquals($found1->getId(), $externallyModified1->getId());
+        $this->assertNotEquals($found1->getProperty(), $externallyModified1->getProperty());
 
         $this->assertEquals($entity2->getId(), $externallyModified2->getId());
         $this->assertNotEquals($entity2->getProperty(), $externallyModified2->getProperty());
-        $this->assertEquals($inserted2->getId(), $externallyModified2->getId());
-        $this->assertNotEquals($inserted2->getProperty(), $externallyModified2->getProperty());
+        $this->assertEquals($found2->getId(), $externallyModified2->getId());
+        $this->assertNotEquals($found2->getProperty(), $externallyModified2->getProperty());
         $this->assertEquals(array('h' => 2, 'w' => 4), $externallyModified2->getProperty());
+
+        $this->getCb()->delete($this->em->getRepository($entity1)->getKey($entity1->getId()));
+        $this->getCb()->delete($this->em->getRepository($entity2)->getKey($entity2->getId()));
+    }
+
+    public function testDeleteRollback()
+    {
+        $entity1 = new TestEntity('test-id-1', array('h' => 'w'));
+        $entity2 = new TestEntity('test-id-2', array(4 => 2));
+        $entity3 = new TestEntity('test-id-3', array(13 => 37));
+
+        $this->em->persist($entity1);
+        $this->em->persist($entity2);
+        $this->em->persist($entity3);
+        $this->em->flush();
+        $this->em->clear();
+
+        /** @var TestEntity $found1 */
+        /** @var TestEntity $found2 */
+        /** @var TestEntity $found3 */
+        $found1 = $this->em->getRepository($entity1)->find($entity1->getId());
+        $found2 = $this->em->getRepository($entity2)->find($entity2->getId());
+        $found3 = $this->em->getRepository($entity3)->find($entity3->getId(), true);
+
+        // Modify entity 3 outside of Ouchbase
+        $this->getCb()->replace(
+            $this->em->getRepository($entity3)->getKey($entity3->getId()),
+            json_encode(array('id' => $entity3->getId(), 'property' => array(37 => 13)))
+        );
+
+        $found1->property = array('w' => 'h');
+        $this->em->delete($found2);
+        $this->em->delete($found3);
+
+        try {
+            $this->em->flush();
+        }
+        catch (\Ouchbase\Exception\EntityModifiedException $e) {
+            $this->assertSame($e->getEntity(), $found3);
+            $this->assertSame($e->getAction(), \Ouchbase\Exception\EntityModifiedException::ACTION_DELETE);
+        }
+
+        /** @var TestEntity $insertedEntity2 */
+        /** @var TestEntity $insertedEntity2 */
+        /** @var TestEntity $insertedEntity2 */
+        $externallyModified1 = $this->em->getRepository($entity1)->find($entity1->getId());
+        $externallyModified2 = $this->em->getRepository($entity2)->find($entity2->getId());
+        $externallyModified3 = $this->em->getRepository($entity3)->find($entity3->getId());
+
+        $this->assertEquals($entity1, $externallyModified1);
+        $this->assertNotEquals($found1, $externallyModified1);
+        $this->assertNotEquals($externallyModified2, null);
+        $this->assertEquals($entity2, $externallyModified2);
+        $this->assertNotEquals($entity3, $externallyModified3);
+
+        $this->getCb()->delete($this->em->getRepository($entity1)->getKey($entity1->getId()));
+        $this->getCb()->delete($this->em->getRepository($entity2)->getKey($entity2->getId()));
+        $this->getCb()->delete($this->em->getRepository($entity3)->getKey($entity3->getId()));
     }
 
 }
