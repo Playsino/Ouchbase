@@ -92,4 +92,55 @@ class OuchbaseTest extends \PHPUnit_Framework_TestCase
         $this->em->clear();
     }
 
+    public function testUpdateRollback()
+    {
+        $entity1 = new TestEntity('test-id-1', array('h' => 4, 'w' => 2));
+        $entity2 = new TestEntity('test-id-2', array('x' => 1337));
+
+        $this->em->persist($entity1);
+        $this->em->persist($entity2);
+        $this->em->flush();
+        $this->em->clear();
+
+        /** @var TestEntity $inserted1 */
+        $inserted1 = $this->em->getRepository($entity1)->find($entity1->getId());
+
+        /** @var TestEntity $inserted2 */
+        $inserted2 = $this->em->getRepository($entity2)->find($entity2->getId(), true);
+
+        // Modify entity 2 outside of Ouchbase
+        $this->getCb()->replace(
+            $this->em->getRepository($entity2)->getKey($entity2->getId()),
+            json_encode(array('id' => $entity2->getId(), 'property' => array('h' => 2, 'w' => 4)))
+        );
+
+        $inserted1->property = array('h' => 2, 'w' => 4);
+        $inserted2->property = array(2 => 'h', 4 => 'w');
+
+        try {
+            $this->em->flush();
+        }
+        catch (\Ouchbase\Exception\EntityModifiedException $e) {
+            $this->assertSame($e->getEntity(), $inserted2);
+            $this->assertSame($e->getAction(), \Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
+        }
+
+        /** @var TestEntity $externallyModified1 */
+        $externallyModified1 = $this->em->getRepository($entity1)->find($entity1->getId());
+
+        /** @var TestEntity $externallyModified2 */
+        $externallyModified2 = $this->em->getRepository($entity2)->find($entity2->getId());
+
+        $this->assertEquals($entity1->getId(), $externallyModified1->getId());
+        $this->assertEquals($entity1->getProperty(), $externallyModified1->getProperty());
+        $this->assertEquals($inserted1->getId(), $externallyModified1->getId());
+        $this->assertNotEquals($inserted1->getProperty(), $externallyModified1->getProperty());
+
+        $this->assertEquals($entity2->getId(), $externallyModified2->getId());
+        $this->assertNotEquals($entity2->getProperty(), $externallyModified2->getProperty());
+        $this->assertEquals($inserted2->getId(), $externallyModified2->getId());
+        $this->assertNotEquals($inserted2->getProperty(), $externallyModified2->getProperty());
+        $this->assertEquals(array('h' => 2, 'w' => 4), $externallyModified2->getProperty());
+    }
+
 }

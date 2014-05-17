@@ -205,4 +205,12 @@ class EntityManager
         return result;
     }
 
+    /**
+     * @return \Couchbase
+     */
+    public function getConnection() -> <\Couchbase>
+    {
+        return this->cb;
+    }
+
 }

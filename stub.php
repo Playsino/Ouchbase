@@ -77,6 +77,11 @@ class EntityManager
      */
     public function update(Entity $entity, $callback/*, $arg1, $arg2 */) {}
 
+    /**
+     * @return \Couchbase
+     */
+    public function getConnection() {}
+
 }
 
 class EntityProxy implements Entity

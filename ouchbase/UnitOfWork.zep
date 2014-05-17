@@ -243,7 +243,7 @@ class UnitOfWork
             }
 
             let repository = this->em->getRepository(data[0]);
-            repository->replace(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
+            this->em->getConnection()->replace(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
         }
 
         return this;
@@ -267,7 +267,7 @@ class UnitOfWork
             }
 
             let repository = this->em->getRepository(data[0]);
-            repository->set(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
+            this->em->getConnection()->set(repository->getKey(data[0]->getId()), im->getOriginalData(data[0]));
         }
 
         return this;
