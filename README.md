@@ -46,6 +46,8 @@ class TestEntityRepository extends \Ouchbase\Repository
 
     protected $className = 'OuchbaseTest\TestEntity';
 
+    public function findByProperty($property) { /** @todo */ }
+
     public function toObject($data)
     {
         return new TestEntity($data['id'], $data['property']);
@@ -61,7 +63,7 @@ class TestEntityRepository extends \Ouchbase\Repository
 }
 
 $em = new \Ouchbase\EntityManager(new \Couchbase('localhost'));
-$em->registerManagedEntityClass('OuchbaseTest\TestEntity', 'OuchbaseTest\TestEntityRepository');
+$em->registerManagedEntityClass('TestEntity', 'TestEntityRepository');
 
 $entity = new TestEntity('test-id', array('hello' => 'world'));
 
@@ -73,6 +75,8 @@ $em->flush();
 
 $em->delete($entity);
 $em->flush();
+
+$entities = $em->getRepository('TestEntity')->findByProperty(42);
 ```
 
 You can find more examples in test/OuchbaseTest/OuchbaseTest.php
