@@ -1,0 +1,5 @@
+
+extern zend_class_entry *ouchbase_exception_entityupdatefailedexception_ce;
+
+ZEPHIR_INIT_CLASS(Ouchbase_Exception_EntityUpdateFailedException);
+
