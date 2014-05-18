@@ -1,1 +1,11 @@
-{"static-type-inference":true,"static-type-inference-second-pass":true,"local-context-pass":true,"constant-folding":true,"static-constant-class-folding":true,"namespace":"ouchbase","name":"","description":"","author":""}
+{
+    "static-type-inference": true,
+    "static-type-inference-second-pass": true,
+    "local-context-pass": true,
+    "constant-folding": true,
+    "static-constant-class-folding": true,
+    "namespace": "ouchbase",
+    "name": "Ouchbase",
+    "description": "Object key/value mapper (OKVM) for Couchbase.",
+    "author": "Ihor Burlachenko"
+}
