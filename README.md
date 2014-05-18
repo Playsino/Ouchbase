@@ -83,4 +83,4 @@ You can find more examples in test/OuchbaseTest/OuchbaseTest.php
 
 Documentation
 -------------
-Please check stub.php to see Ouchbase API with documentation.
+Please check stub.php to see Ouchbase API with documentation. Also use stub.php for autocompletion in your favourite IDE.
