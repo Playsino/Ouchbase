@@ -7,7 +7,7 @@ Installation
 ------------
 Go to the ext directory and execute
 ```bash
-sudo phpize
+phpize
 ./configure
 make
 make install
