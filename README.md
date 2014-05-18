@@ -5,7 +5,7 @@ Ouchbase is an object key/value mapper (OKVM) for Couchbase. It is written in [Z
 
 Installation
 ------------
-Go to the ext direcotry and execute
+Go to the ext directory and execute
 ```bash
 sudo phpize
 ./configure
@@ -59,9 +59,7 @@ class TestEntityRepository extends \Ouchbase\Repository
         );
     }
 }
-```
 
-```php
 $em = new \Ouchbase\EntityManager(new \Couchbase('localhost'));
 $em->registerManagedEntityClass('OuchbaseTest\TestEntity', 'OuchbaseTest\TestEntityRepository');
 
