@@ -12,7 +12,7 @@
         "php": ">=5.3.0"
     },
     "scripts": {
-        "post-install-cmd": ["./ext/install"],
-        "post-update-cmd": ["./ext/install"]
+        "post-install-cmd": ["./install.sh"],
+        "post-update-cmd": ["./install.sh"]
     }
 }
