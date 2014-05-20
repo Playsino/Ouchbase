@@ -1,5 +1,5 @@
 {
-    "name": "ihor/Ouchbase",
+    "name": "ihor/ouchbase",
     "description": "Object key/value mapper (OKVM) for Couchbase written in Zephir",
     "license": "MIT",
     "authors": [
