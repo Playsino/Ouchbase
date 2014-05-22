@@ -1,3 +1,4 @@
 .idea
 .temp
 test/logs/*
+ext/config.log
