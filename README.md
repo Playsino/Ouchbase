@@ -10,7 +10,7 @@ Just clone Ouchbase repository and run `./install.sh`. If you have Zephir instal
 To install Ouchbase with composer add the following to your composer.json
 ```
 "require": {
-    "ihor/ouchbase": "dev-master"
+    "ihor/ouchbase": "0.1.*@dev"
 },
 "scripts": {
     "post-install-cmd": ["./vendor/ihor/ouchbase/install.sh"],
