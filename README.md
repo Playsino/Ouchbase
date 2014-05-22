@@ -5,7 +5,7 @@ Ouchbase is an object key/value mapper (OKVM) for Couchbase. It is written in [Z
 
 Installation
 ------------
-Just clone Ouchbase repository and run `./install.sh`. If you have Zephir installed then you can execute `/.build.sh.`
+Just clone Ouchbase repository and run `./install.sh`. If you have Zephir installed then you can execute `./build.sh.`
 
 To install Ouchbase with composer add the following to your composer.json
 ```
