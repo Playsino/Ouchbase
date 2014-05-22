@@ -5,14 +5,18 @@ Ouchbase is an object key/value mapper (OKVM) for Couchbase. It is written in [Z
 
 Installation
 ------------
-Go to the ext directory and execute
-```bash
-phpize
-./configure
-make
-make install
+Just clone Ouchbase repository and run `./install.sh`. If you have Zephir installed then you can execute `/.build.sh.`
+
+To install Ouchbase with composer add the following to your composer.json
 ```
-If you have Zephir installed then just execute build.sh.
+"require": {
+    "ihor/ouchbase": "dev-master"
+},
+"scripts": {
+    "post-install-cmd": ["./vendor/ihor/ouchbase/install.sh"],
+    "post-update-cmd": ["./vendor/ihor/ouchbase/install.sh"]
+},
+```
 
 Usage
 -----
