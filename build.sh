@@ -1,7 +1,4 @@
+#!/bin/bash
 rm -rf ext
 zephir compile
-cd ext
-sudo phpize
-./configure
-make
-make install
+./install.sh
