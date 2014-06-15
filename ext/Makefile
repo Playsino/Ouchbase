@@ -4,14 +4,14 @@ top_srcdir = /Users/ihor/Development/projects/ouchbase/ext
 top_builddir = /Users/ihor/Development/projects/ouchbase/ext
 EGREP = /usr/bin/grep -E
 SED = /usr/bin/sed
-CONFIGURE_COMMAND = './configure' '--enable-ouchbase'
-CONFIGURE_OPTIONS = '--enable-ouchbase'
+CONFIGURE_COMMAND = './configure'
+CONFIGURE_OPTIONS =
 SHLIB_SUFFIX_NAME = dylib
 SHLIB_DL_SUFFIX_NAME = so
 ZEND_EXT_TYPE = zend_extension
 RE2C = re2c
 AWK = awk
-shared_objects_ouchbase = ouchbase.lo kernel/main.lo kernel/memory.lo kernel/exception.lo kernel/hash.lo kernel/debug.lo kernel/backtrace.lo kernel/object.lo kernel/array.lo kernel/extended/array.lo kernel/string.lo kernel/fcall.lo kernel/require.lo kernel/file.lo kernel/operators.lo kernel/concat.lo kernel/variables.lo kernel/filter.lo kernel/iterator.lo kernel/exit.lo ouchbase/entity.lo ouchbase/entitymanager.lo ouchbase/entityproxy.lo ouchbase/exception/entitylogicexception.lo ouchbase/exception/entitymanagerexception.lo ouchbase/exception/entitymodifiedexception.lo ouchbase/exception/entityupdatefailedexception.lo ouchbase/identitymap.lo ouchbase/repository.lo ouchbase/unitofwork.lo ouchbase/_etc.lo
+shared_objects_ouchbase = ouchbase.lo kernel/main.lo kernel/memory.lo kernel/exception.lo kernel/hash.lo kernel/debug.lo kernel/backtrace.lo kernel/object.lo kernel/array.lo kernel/extended/array.lo kernel/string.lo kernel/fcall.lo kernel/require.lo kernel/file.lo kernel/operators.lo kernel/concat.lo kernel/variables.lo kernel/filter.lo kernel/iterator.lo kernel/exit.lo ouchbase/entity.lo ouchbase/entitymanager.lo ouchbase/entityproxy.lo ouchbase/exception/couchbaseexception.lo ouchbase/exception/entitylogicexception.lo ouchbase/exception/entitymanagerexception.lo ouchbase/exception/entitymodifiedexception.lo ouchbase/exception/entityupdatefailedexception.lo ouchbase/identitymap.lo ouchbase/repository.lo ouchbase/unitofwork.lo ouchbase/_etc.lo
 PHP_PECL_EXTENSION = ouchbase
 PHP_MODULES = $(phplibdir)/ouchbase.la
 PHP_ZEND_EX =
@@ -23,10 +23,10 @@ libdir = ${exec_prefix}/lib
 prefix = /usr/local/Cellar/php55/5.5.11
 phplibdir = /Users/ihor/Development/projects/ouchbase/ext/modules
 phpincludedir = /usr/local/Cellar/php55/5.5.11/include/php
-CC = gcc
-CFLAGS = -O2 -fvisibility=hidden -Wparentheses -flto
+CC = cc
+CFLAGS = -g -O2
 CFLAGS_CLEAN = $(CFLAGS)
-CPP = gcc -E
+CPP = cc -E
 CPPFLAGS = -DHAVE_CONFIG_H
 CXX =
 CXXFLAGS =
@@ -222,6 +222,8 @@ ouchbase/entitymanager.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbas
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entitymanager.zep.c -o ouchbase/entitymanager.lo 
 ouchbase/entityproxy.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entityproxy.zep.c
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entityproxy.zep.c -o ouchbase/entityproxy.lo 
+ouchbase/exception/couchbaseexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/couchbaseexception.zep.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/couchbaseexception.zep.c -o ouchbase/exception/couchbaseexception.lo 
 ouchbase/exception/entitylogicexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitylogicexception.zep.c
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitylogicexception.zep.c -o ouchbase/exception/entitylogicexception.lo 
 ouchbase/exception/entitymanagerexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitymanagerexception.zep.c

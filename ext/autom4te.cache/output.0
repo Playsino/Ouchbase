@@ -4146,6 +4146,7 @@ $as_echo "@%:@define HAVE_OUCHBASE 1" >>confdefs.h
 	ouchbase_sources="ouchbase.c kernel/main.c kernel/memory.c kernel/exception.c kernel/hash.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/extended/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/exit.c ouchbase/entity.zep.c
 	ouchbase/entitymanager.zep.c
 	ouchbase/entityproxy.zep.c
+	ouchbase/exception/couchbaseexception.zep.c
 	ouchbase/exception/entitylogicexception.zep.c
 	ouchbase/exception/entitymanagerexception.zep.c
 	ouchbase/exception/entitymodifiedexception.zep.c

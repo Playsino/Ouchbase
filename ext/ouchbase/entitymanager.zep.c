@@ -228,9 +228,9 @@ PHP_METHOD(Ouchbase_EntityManager, getCachedRepository) {
  */
 PHP_METHOD(Ouchbase_EntityManager, persist) {
 
-	zephir_nts_static zephir_fcall_cache_entry *_4 = NULL;
+	zephir_nts_static zephir_fcall_cache_entry *_5 = NULL;
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *entity, *_0, *_1 = NULL, *_2, *_3 = NULL, *_5 = NULL, *_6;
+	zval *entity, *_0, *_1 = NULL, *_2, *_3 = NULL, *_4 = NULL, *_6 = NULL, *_7;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 0, &entity);
@@ -250,16 +250,16 @@ PHP_METHOD(Ouchbase_EntityManager, persist) {
 		zephir_check_call_status();
 	} else {
 		_2 = zephir_fetch_nproperty_this(this_ptr, SL("im"), PH_NOISY_CC);
-		ZEPHIR_CALL_CE_STATIC(&_3, ouchbase__etc_ce, "getentityclass", &_4, entity);
+		ZEPHIR_CALL_CE_STATIC(&_4, ouchbase__etc_ce, "getentityclass", &_5, entity);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(&_1, this_ptr, "getrepository", NULL, _3);
+		ZEPHIR_CALL_METHOD(&_3, this_ptr, "getrepository", NULL, _4);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(&_5, _1, "toarray", NULL, entity);
+		ZEPHIR_CALL_METHOD(&_6, _3, "toarray", NULL, entity);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(NULL, _2, "register", NULL, entity, _5);
+		ZEPHIR_CALL_METHOD(NULL, _2, "register", NULL, entity, _6);
 		zephir_check_call_status();
-		_6 = zephir_fetch_nproperty_this(this_ptr, SL("uow"), PH_NOISY_CC);
-		ZEPHIR_CALL_METHOD(NULL, _6, "insert", NULL, entity);
+		_7 = zephir_fetch_nproperty_this(this_ptr, SL("uow"), PH_NOISY_CC);
+		ZEPHIR_CALL_METHOD(NULL, _7, "insert", NULL, entity);
 		zephir_check_call_status();
 	}
 	RETURN_THIS();

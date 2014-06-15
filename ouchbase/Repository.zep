@@ -227,12 +227,19 @@ abstract class Repository
             return this;
         }
 
-        if !this->executeWithoutTimeouts("replace", [this->getKey(entity->getId()), json_encode(data), 0, cas]) {
-            var e;
-            let e = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
-            e->setAction(\Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
-
-            throw e;
+        var e;
+        try {
+            if !this->executeWithoutTimeouts("replace", [this->getKey(entity->getId()), json_encode(data), 0, cas]) {
+                throw new \CouchbaseKeyMutatedException();
+            }
+            // Zephir wanted me to put a return here
+            return this;
+        }
+        catch \CouchbaseKeyMutatedException, e {
+            var ex;
+            let ex = new \Ouchbase\Exception\EntityModifiedException(entity, "was modified");
+            ex->setAction(\Ouchbase\Exception\EntityModifiedException::ACTION_UPDATE);
+            throw ex;
         }
 
         return this;
@@ -250,7 +257,6 @@ abstract class Repository
     {
         if !cas {
             this->executeWithoutTimeouts("delete", [this->getKey(entity->getId())]);
-
             this->im->unregister(entity);
             return this;
         }
@@ -287,18 +293,27 @@ abstract class Repository
      */
     protected function executeWithoutTimeouts(string method, array args = [])
     {
-        var e;
+        var e, result;
         int attempts = 0;
         loop {
             let attempts = attempts + 1;
             try {
                 if !(substr(method, 0, 2) == "__") { // hack :)
-                    return call_user_func_array([this->cb, method], args);
+                    let result = call_user_func_array([this->cb, method], args);
+                    switch this->cb->getResultCode() {
+                        case \Couchbase::SUCCESS: return result;
+                        case \Couchbase::KEY_EEXISTS: throw new \CouchbaseKeyMutatedException();
+                    }
                 }
-                return call_user_func_array([this, method], args);
+                else {
+                    return call_user_func_array([this, method], args);
+                }
             }
             catch \CouchbaseLibcouchbaseException, e {
-                if attempts > 3 {
+                if (
+                    !(e instanceof \CouchbaseLibcouchbaseException) &&
+                    !(e instanceof \CouchbaseTimeoutException)
+                ) {
                     throw e;
                 }
             }
@@ -307,10 +322,21 @@ abstract class Repository
             if attempts > 3 {
                 break;
             }
+
+            usleep(mt_rand(20, 100));
         }
 
         if e {
             throw e;
+        }
+        else {
+            throw new \Ouchbase\Exception\CouchbaseException(sprintf(
+                "Could not perform %s(%s) with result code '%s' and message '%s'",
+                method,
+                implode(", ", args),
+                this->cb->getResultCode(),
+                this->cb->getResultMessage()
+            ));
         }
     }
 

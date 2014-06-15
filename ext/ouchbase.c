@@ -29,6 +29,7 @@ zend_class_entry *ouchbase_exception_entitylogicexception_ce;
 zend_class_entry *ouchbase__etc_ce;
 zend_class_entry *ouchbase_entitymanager_ce;
 zend_class_entry *ouchbase_entityproxy_ce;
+zend_class_entry *ouchbase_exception_couchbaseexception_ce;
 zend_class_entry *ouchbase_exception_entitymanagerexception_ce;
 zend_class_entry *ouchbase_exception_entitymodifiedexception_ce;
 zend_class_entry *ouchbase_exception_entityupdatefailedexception_ce;
@@ -204,6 +205,7 @@ static PHP_MINIT_FUNCTION(ouchbase)
 	ZEPHIR_INIT(Ouchbase_Exception_EntityLogicException);
 	ZEPHIR_INIT(Ouchbase_EntityManager);
 	ZEPHIR_INIT(Ouchbase_EntityProxy);
+	ZEPHIR_INIT(Ouchbase_Exception_CouchbaseException);
 	ZEPHIR_INIT(Ouchbase_Exception_EntityManagerException);
 	ZEPHIR_INIT(Ouchbase_Exception_EntityModifiedException);
 	ZEPHIR_INIT(Ouchbase_Exception_EntityUpdateFailedException);

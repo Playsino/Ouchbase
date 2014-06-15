@@ -94,21 +94,21 @@ PHP_METHOD(Ouchbase_EntityProxy, getId) {
 PHP_METHOD(Ouchbase_EntityProxy, getEntity) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *_0, *_1, *_2, *_3;
+	zval *_0, *_1, *_2, *_3, *_4;
 
 	ZEPHIR_MM_GROW();
 
 	_0 = zephir_fetch_nproperty_this(this_ptr, SL("entity"), PH_NOISY_CC);
 	if (!(zephir_is_true(_0))) {
 		ZEPHIR_INIT_VAR(_1);
-		_0 = zephir_fetch_nproperty_this(this_ptr, SL("creator"), PH_NOISY_CC);
-		ZEPHIR_INIT_VAR(_2);
-		array_init(_2);
-		ZEPHIR_CALL_USER_FUNC_ARRAY(_1, _0, _2);
+		_2 = zephir_fetch_nproperty_this(this_ptr, SL("creator"), PH_NOISY_CC);
+		ZEPHIR_INIT_VAR(_3);
+		array_init(_3);
+		ZEPHIR_CALL_USER_FUNC_ARRAY(_1, _2, _3);
 		zephir_check_call_status();
 		zephir_update_property_this(this_ptr, SL("entity"), _1 TSRMLS_CC);
-		_3 = zephir_fetch_nproperty_this(this_ptr, SL("entity"), PH_NOISY_CC);
-		if (!(zephir_is_true(_3))) {
+		_4 = zephir_fetch_nproperty_this(this_ptr, SL("entity"), PH_NOISY_CC);
+		if (!(zephir_is_true(_4))) {
 			ZEPHIR_THROW_EXCEPTION_DEBUG_STR(ouchbase_exception_entitylogicexception_ce, "Object was not created", "ouchbase/EntityProxy.zep", 53);
 			return;
 		}

@@ -180,13 +180,13 @@ PHP_METHOD(Ouchbase_Repository, find) {
  */
 PHP_METHOD(Ouchbase_Repository, refresh) {
 
-	zephir_fcall_cache_entry *_11 = NULL, *_13 = NULL, *_14 = NULL;
-	HashTable *_8;
-	HashPosition _7;
+	zephir_fcall_cache_entry *_12 = NULL, *_14 = NULL, *_15 = NULL;
+	HashTable *_9;
+	HashPosition _8;
 	zval *_4;
 	int ZEPHIR_LAST_CALL_STATUS;
 	zend_bool concurrent;
-	zval *entity = NULL, *concurrent_param = NULL, *_0, *_1 = NULL, *_2, *_3 = NULL, *cas, *data = NULL, *dataWithCas = NULL, *refreshed = NULL, *_5, *property = NULL, *propertyReflection = NULL, *_6 = NULL, **_9, *_10 = NULL, *_12 = NULL, *_15;
+	zval *entity = NULL, *concurrent_param = NULL, *_0, *_1 = NULL, *_2, *_3 = NULL, *cas, *data = NULL, *dataWithCas = NULL, *_5 = NULL, *refreshed = NULL, *_6, *property = NULL, *propertyReflection = NULL, *_7 = NULL, **_10, *_11 = NULL, *_13 = NULL, *_16;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &entity, &concurrent_param);
@@ -224,9 +224,9 @@ PHP_METHOD(Ouchbase_Repository, refresh) {
 	}
 	ZEPHIR_INIT_VAR(_4);
 	array_init_size(_4, 2);
-	ZEPHIR_CALL_METHOD(&_1, entity, "getid",  NULL);
+	ZEPHIR_CALL_METHOD(&_5, entity, "getid",  NULL);
 	zephir_check_call_status();
-	zephir_array_fast_append(_4, _1);
+	zephir_array_fast_append(_4, _5);
 	ZEPHIR_INIT_NVAR(_3);
 	ZVAL_STRING(_3, "__getWithCas", 0);
 	ZEPHIR_CALL_METHOD(&dataWithCas, this_ptr, "executewithouttimeouts", NULL, _3, _4);
@@ -246,31 +246,31 @@ PHP_METHOD(Ouchbase_Repository, refresh) {
 	}
 	ZEPHIR_CALL_METHOD(&refreshed, this_ptr, "toobject", NULL, data);
 	zephir_check_call_status();
-	_5 = zephir_fetch_nproperty_this(this_ptr, SL("im"), PH_NOISY_CC);
-	ZEPHIR_CALL_METHOD(NULL, _5, "updateoriginaldata", NULL, entity, data);
+	_6 = zephir_fetch_nproperty_this(this_ptr, SL("im"), PH_NOISY_CC);
+	ZEPHIR_CALL_METHOD(NULL, _6, "updateoriginaldata", NULL, entity, data);
 	zephir_check_call_status();
-	ZEPHIR_CALL_METHOD(&_1, this_ptr, "getclassreflection",  NULL);
+	ZEPHIR_CALL_METHOD(&_5, this_ptr, "getclassreflection",  NULL);
 	zephir_check_call_status();
-	ZEPHIR_CALL_METHOD(&_6, _1, "getproperties",  NULL);
+	ZEPHIR_CALL_METHOD(&_7, _5, "getproperties",  NULL);
 	zephir_check_call_status();
-	zephir_is_iterable(_6, &_8, &_7, 0, 0);
+	zephir_is_iterable(_7, &_9, &_8, 0, 0);
 	for (
-	  ; zephir_hash_get_current_data_ex(_8, (void**) &_9, &_7) == SUCCESS
-	  ; zephir_hash_move_forward_ex(_8, &_7)
+	  ; zephir_hash_get_current_data_ex(_9, (void**) &_10, &_8) == SUCCESS
+	  ; zephir_hash_move_forward_ex(_9, &_8)
 	) {
-		ZEPHIR_GET_HVALUE(property, _9);
-		ZEPHIR_CALL_METHOD(&_10, property, "getname",  NULL);
+		ZEPHIR_GET_HVALUE(property, _10);
+		ZEPHIR_CALL_METHOD(&_11, property, "getname",  NULL);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(&propertyReflection, this_ptr, "getpropertyreflection", &_11, _10);
+		ZEPHIR_CALL_METHOD(&propertyReflection, this_ptr, "getpropertyreflection", &_12, _11);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(&_12, propertyReflection, "getvalue", &_13, refreshed);
+		ZEPHIR_CALL_METHOD(&_13, propertyReflection, "getvalue", &_14, refreshed);
 		zephir_check_call_status();
-		ZEPHIR_CALL_METHOD(NULL, propertyReflection, "setvalue", &_14, entity, _12);
+		ZEPHIR_CALL_METHOD(NULL, propertyReflection, "setvalue", &_15, entity, _13);
 		zephir_check_call_status();
 	}
 	if (concurrent) {
-		_15 = zephir_fetch_nproperty_this(this_ptr, SL("uow"), PH_NOISY_CC);
-		ZEPHIR_CALL_METHOD(NULL, _15, "persist", NULL, entity, cas);
+		_16 = zephir_fetch_nproperty_this(this_ptr, SL("uow"), PH_NOISY_CC);
+		ZEPHIR_CALL_METHOD(NULL, _16, "persist", NULL, entity, cas);
 		zephir_check_call_status();
 	}
 	RETURN_THIS();
@@ -415,9 +415,10 @@ PHP_METHOD(Ouchbase_Repository, insert) {
  */
 PHP_METHOD(Ouchbase_Repository, update) {
 
+	zend_class_entry *_8;
 	zval *_5 = NULL;
 	int ZEPHIR_LAST_CALL_STATUS;
-	zval *entity = NULL, *cas = NULL, *_0 = NULL, *data = NULL, *originalData = NULL, *_1, *_2, *_3 = NULL, *_4, *_6 = NULL, *_7 = NULL, *e;
+	zval *entity = NULL, *cas = NULL, *_0 = NULL, *data = NULL, *originalData = NULL, *_1, *_2 = NULL, *_3 = NULL, *_4, *_6 = NULL, *e = NULL, *_7 = NULL, *ex;
 
 	ZEPHIR_MM_GROW();
 	zephir_fetch_params(1, 1, 1, &entity, &cas);
@@ -482,39 +483,58 @@ PHP_METHOD(Ouchbase_Repository, update) {
 		zephir_check_call_status();
 		RETURN_THIS();
 	}
-	ZEPHIR_INIT_NVAR(_5);
-	array_init_size(_5, 6);
-	ZEPHIR_CALL_METHOD(&_7, entity, "getid",  NULL);
-	zephir_check_call_status();
-	ZEPHIR_CALL_METHOD(&_6, this_ptr, "getkey", NULL, _7);
-	zephir_check_call_status();
-	zephir_array_fast_append(_5, _6);
-	ZEPHIR_INIT_NVAR(_3);
-	zephir_json_encode(_3, &(_3), data, 0  TSRMLS_CC);
-	zephir_array_fast_append(_5, _3);
-	ZEPHIR_INIT_NVAR(_3);
-	ZVAL_LONG(_3, 0);
-	zephir_array_fast_append(_5, _3);
-	zephir_array_fast_append(_5, cas);
-	ZEPHIR_INIT_NVAR(_3);
-	ZVAL_STRING(_3, "replace", 0);
-	ZEPHIR_CALL_METHOD(&_0, this_ptr, "executewithouttimeouts", NULL, _3, _5);
-	zephir_check_temp_parameter(_3);
-	zephir_check_call_status();
-	if (!(zephir_is_true(_0))) {
-		ZEPHIR_INIT_VAR(e);
-		object_init_ex(e, ouchbase_exception_entitymodifiedexception_ce);
+
+	/* try_start_1: */
+
+		ZEPHIR_INIT_NVAR(_5);
+		array_init_size(_5, 6);
+		ZEPHIR_CALL_METHOD(&_7, entity, "getid",  NULL);
+		zephir_check_call_status_or_jump(try_end_1);
+		ZEPHIR_CALL_METHOD(&_6, this_ptr, "getkey", NULL, _7);
+		zephir_check_call_status_or_jump(try_end_1);
+		zephir_array_fast_append(_5, _6);
+		ZEPHIR_INIT_NVAR(_3);
+		zephir_json_encode(_3, &(_3), data, 0  TSRMLS_CC);
+		zephir_array_fast_append(_5, _3);
+		ZEPHIR_INIT_NVAR(_3);
+		ZVAL_LONG(_3, 0);
+		zephir_array_fast_append(_5, _3);
+		zephir_array_fast_append(_5, cas);
+		ZEPHIR_INIT_NVAR(_3);
+		ZVAL_STRING(_3, "replace", 0);
+		ZEPHIR_CALL_METHOD(&_0, this_ptr, "executewithouttimeouts", NULL, _3, _5);
+		zephir_check_temp_parameter(_3);
+		zephir_check_call_status_or_jump(try_end_1);
+		if (!(zephir_is_true(_0))) {
+			ZEPHIR_INIT_LNVAR(_2);
+			_8 = zend_fetch_class(SL("CouchbaseKeyMutatedException"), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+			object_init_ex(_2, _8);
+			ZEPHIR_CALL_METHOD(NULL, _2, "__construct", NULL);
+			zephir_check_call_status_or_jump(try_end_1);
+			zephir_throw_exception_debug(_2, "ouchbase/Repository.zep", 233 TSRMLS_CC);
+			goto try_end_1;
+
+		}
+		RETURN_THIS();
+
+	try_end_1:
+
+	ZEPHIR_CPY_WRT(e, EG(exception));
+	if (zephir_is_instance_of(e, SL("CouchbaseKeyMutatedException") TSRMLS_CC)) {
+		zend_clear_exception(TSRMLS_C);
+		ZEPHIR_INIT_VAR(ex);
+		object_init_ex(ex, ouchbase_exception_entitymodifiedexception_ce);
 		ZEPHIR_INIT_NVAR(_3);
 		ZVAL_STRING(_3, "was modified", 0);
-		ZEPHIR_CALL_METHOD(NULL, e, "__construct", NULL, entity, _3);
+		ZEPHIR_CALL_METHOD(NULL, ex, "__construct", NULL, entity, _3);
 		zephir_check_temp_parameter(_3);
 		zephir_check_call_status();
 		ZEPHIR_INIT_NVAR(_3);
 		ZVAL_STRING(_3, "update", 0);
-		ZEPHIR_CALL_METHOD(NULL, e, "setaction", NULL, _3);
+		ZEPHIR_CALL_METHOD(NULL, ex, "setaction", NULL, _3);
 		zephir_check_temp_parameter(_3);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(e, "ouchbase/Repository.zep", 235 TSRMLS_CC);
+		zephir_throw_exception_debug(ex, "ouchbase/Repository.zep", 242 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
@@ -604,7 +624,7 @@ PHP_METHOD(Ouchbase_Repository, delete) {
 		ZEPHIR_CALL_METHOD(NULL, ex, "setaction", NULL, _3);
 		zephir_check_temp_parameter(_3);
 		zephir_check_call_status();
-		zephir_throw_exception_debug(ex, "ouchbase/Repository.zep", 268 TSRMLS_CC);
+		zephir_throw_exception_debug(ex, "ouchbase/Repository.zep", 274 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
@@ -628,10 +648,13 @@ PHP_METHOD(Ouchbase_Repository, delete) {
  */
 PHP_METHOD(Ouchbase_Repository, executeWithoutTimeouts) {
 
-	zephir_nts_static zephir_fcall_cache_entry *_3 = NULL;
+	zend_bool _11;
+	zephir_fcall_cache_entry *_10 = NULL;
+	zend_class_entry *_9;
+	zephir_nts_static zephir_fcall_cache_entry *_3 = NULL, *_12 = NULL, *_13 = NULL, *_18 = NULL;
 	int attempts = 0, ZEPHIR_LAST_CALL_STATUS;
 	zval *args = NULL, *_4 = NULL;
-	zval *method_param = NULL, *args_param = NULL, *e = NULL, _0 = zval_used_for_init, _1 = zval_used_for_init, *_2 = NULL, *_5 = NULL;
+	zval *method_param = NULL, *args_param = NULL, *e = NULL, *result = NULL, _0 = zval_used_for_init, _1 = zval_used_for_init, *_2 = NULL, *_5 = NULL, *_6, *_7 = NULL, *_8 = NULL, *_14, *_15, *_16 = NULL, *_17 = NULL;
 	zval *method = NULL;
 
 	ZEPHIR_MM_GROW();
@@ -658,31 +681,55 @@ PHP_METHOD(Ouchbase_Repository, executeWithoutTimeouts) {
 			ZEPHIR_CALL_FUNCTION(&_2, "substr", &_3, method, &_0, &_1);
 			zephir_check_call_status_or_jump(try_end_1);
 			if (!(ZEPHIR_IS_STRING(_2, "__"))) {
+				ZEPHIR_INIT_NVAR(result);
 				ZEPHIR_INIT_NVAR(_4);
 				array_init_size(_4, 3);
 				ZEPHIR_OBS_NVAR(_5);
 				zephir_read_property_this(&_5, this_ptr, SL("cb"), PH_NOISY_CC);
 				zephir_array_fast_append(_4, _5);
 				zephir_array_fast_append(_4, method);
+				ZEPHIR_CALL_USER_FUNC_ARRAY(result, _4, args);
+				zephir_check_call_status_or_jump(try_end_1);
+				_6 = zephir_fetch_nproperty_this(this_ptr, SL("cb"), PH_NOISY_CC);
+				ZEPHIR_CALL_METHOD(&_7, _6, "getresultcode",  NULL);
+				zephir_check_call_status_or_jump(try_end_1);
+				do {
+					if (ZEPHIR_IS_LONG(_7, 0)) {
+						RETURN_CCTOR(result);
+					}
+					if (ZEPHIR_IS_LONG(_7, 12)) {
+						ZEPHIR_INIT_LNVAR(_8);
+						_9 = zend_fetch_class(SL("CouchbaseKeyMutatedException"), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+						object_init_ex(_8, _9);
+						ZEPHIR_CALL_METHOD(NULL, _8, "__construct", &_10);
+						zephir_check_call_status_or_jump(try_end_1);
+						zephir_throw_exception_debug(_8, "ouchbase/Repository.zep", 305 TSRMLS_CC);
+						goto try_end_1;
+
+					}
+				} while(0);
+
+			} else {
+				ZEPHIR_INIT_NVAR(_4);
+				array_init_size(_4, 3);
+				zephir_array_fast_append(_4, this_ptr);
+				zephir_array_fast_append(_4, method);
 				ZEPHIR_CALL_USER_FUNC_ARRAY(return_value, _4, args);
 				zephir_check_call_status_or_jump(try_end_1);
 				RETURN_MM();
 			}
-			ZEPHIR_INIT_NVAR(_4);
-			array_init_size(_4, 3);
-			zephir_array_fast_append(_4, this_ptr);
-			zephir_array_fast_append(_4, method);
-			ZEPHIR_CALL_USER_FUNC_ARRAY(return_value, _4, args);
-			zephir_check_call_status_or_jump(try_end_1);
-			RETURN_MM();
 
 		try_end_1:
 
 		ZEPHIR_CPY_WRT(e, EG(exception));
 		if (zephir_is_instance_of(e, SL("CouchbaseLibcouchbaseException") TSRMLS_CC)) {
 			zend_clear_exception(TSRMLS_C);
-			if (attempts > 3) {
-				zephir_throw_exception_debug(e, "ouchbase/Repository.zep", 302 TSRMLS_CC);
+			_11 = !(zephir_is_instance_of(e, SL("CouchbaseLibcouchbaseException") TSRMLS_CC));
+			if (_11) {
+				_11 = !(zephir_is_instance_of(e, SL("CouchbaseTimeoutException") TSRMLS_CC));
+			}
+			if (_11) {
+				zephir_throw_exception_debug(e, "ouchbase/Repository.zep", 317 TSRMLS_CC);
 				ZEPHIR_MM_RESTORE();
 				return;
 			}
@@ -690,13 +737,40 @@ PHP_METHOD(Ouchbase_Repository, executeWithoutTimeouts) {
 		if (attempts > 3) {
 			break;
 		}
+		ZEPHIR_SINIT_NVAR(_0);
+		ZVAL_LONG(&_0, 20);
+		ZEPHIR_SINIT_NVAR(_1);
+		ZVAL_LONG(&_1, 100);
+		ZEPHIR_CALL_FUNCTION(&_2, "mt_rand", &_12, &_0, &_1);
+		zephir_check_call_status();
+		ZEPHIR_CALL_FUNCTION(NULL, "usleep", &_13, _2);
+		zephir_check_call_status();
 	}
 	if (zephir_is_true(e)) {
-		zephir_throw_exception_debug(e, "ouchbase/Repository.zep", 313 TSRMLS_CC);
+		zephir_throw_exception_debug(e, "ouchbase/Repository.zep", 330 TSRMLS_CC);
+		ZEPHIR_MM_RESTORE();
+		return;
+	} else {
+		ZEPHIR_INIT_LNVAR(_8);
+		object_init_ex(_8, ouchbase_exception_couchbaseexception_ce);
+		ZEPHIR_INIT_VAR(_14);
+		zephir_fast_join_str(_14, SL(", "), args TSRMLS_CC);
+		_6 = zephir_fetch_nproperty_this(this_ptr, SL("cb"), PH_NOISY_CC);
+		ZEPHIR_CALL_METHOD(&_7, _6, "getresultcode",  NULL);
+		zephir_check_call_status();
+		_15 = zephir_fetch_nproperty_this(this_ptr, SL("cb"), PH_NOISY_CC);
+		ZEPHIR_CALL_METHOD(&_16, _15, "getresultmessage",  NULL);
+		zephir_check_call_status();
+		ZEPHIR_SINIT_NVAR(_0);
+		ZVAL_STRING(&_0, "Could not perform %s(%s) with result code '%s' and message '%s'", 0);
+		ZEPHIR_CALL_FUNCTION(&_17, "sprintf", &_18, &_0, method, _14, _7, _16);
+		zephir_check_call_status();
+		ZEPHIR_CALL_METHOD(NULL, _8, "__construct", NULL, _17);
+		zephir_check_call_status();
+		zephir_throw_exception_debug(_8, "ouchbase/Repository.zep", 339 TSRMLS_CC);
 		ZEPHIR_MM_RESTORE();
 		return;
 	}
-	ZEPHIR_MM_RESTORE();
 
 }
 
@@ -725,7 +799,7 @@ PHP_METHOD(Ouchbase_Repository, getClassReflection) {
 
 	int ZEPHIR_LAST_CALL_STATUS;
 	zend_class_entry *_2;
-	zval *_0, *_1;
+	zval *_0, *_1, *_3;
 
 	ZEPHIR_MM_GROW();
 
@@ -734,8 +808,8 @@ PHP_METHOD(Ouchbase_Repository, getClassReflection) {
 		ZEPHIR_INIT_VAR(_1);
 		_2 = zend_fetch_class(SL("ReflectionClass"), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 		object_init_ex(_1, _2);
-		_0 = zephir_fetch_nproperty_this(this_ptr, SL("className"), PH_NOISY_CC);
-		ZEPHIR_CALL_METHOD(NULL, _1, "__construct", NULL, _0);
+		_3 = zephir_fetch_nproperty_this(this_ptr, SL("className"), PH_NOISY_CC);
+		ZEPHIR_CALL_METHOD(NULL, _1, "__construct", NULL, _3);
 		zephir_check_call_status();
 		zephir_update_property_this(this_ptr, SL("_classReflection"), _1 TSRMLS_CC);
 	}

@@ -44,6 +44,8 @@ ouchbase/entitymanager.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbas
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entitymanager.zep.c -o ouchbase/entitymanager.lo 
 ouchbase/entityproxy.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entityproxy.zep.c
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/entityproxy.zep.c -o ouchbase/entityproxy.lo 
+ouchbase/exception/couchbaseexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/couchbaseexception.zep.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/couchbaseexception.zep.c -o ouchbase/exception/couchbaseexception.lo 
 ouchbase/exception/entitylogicexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitylogicexception.zep.c
 	$(LIBTOOL) --mode=compile $(CC)  -I. -I/Users/ihor/Development/projects/ouchbase/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitylogicexception.zep.c -o ouchbase/exception/entitylogicexception.lo 
 ouchbase/exception/entitymanagerexception.lo: /Users/ihor/Development/projects/ouchbase/ext/ouchbase/exception/entitymanagerexception.zep.c

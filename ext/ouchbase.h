@@ -7,6 +7,7 @@
 #include "ouchbase/entity.zep.h"
 #include "ouchbase/entitymanager.zep.h"
 #include "ouchbase/entityproxy.zep.h"
+#include "ouchbase/exception/couchbaseexception.zep.h"
 #include "ouchbase/exception/entitylogicexception.zep.h"
 #include "ouchbase/exception/entitymanagerexception.zep.h"
 #include "ouchbase/exception/entitymodifiedexception.zep.h"
